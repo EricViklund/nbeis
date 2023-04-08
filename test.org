@@ -1,0 +1,233 @@
+#+title: Electrochemical Surface State Sensing Using Electrochemical Impedance Spectroscopy
+#+author: Eric Viklund
+#+date: \date
+#+STARTUP: latexpreview
+#+PROPERTY: header-args:jupyter-python :session py :async yes :kernel test-env
+
+* Introduction
+*Using* electrochemical impedance spectroscopy, we have devised a method of sensing the microscopic surface conditions on the surface of niobium as it is undergoing an electrochemical polishing (EP) treatment.
+* Theory
+An alternating voltage is applied to the niobium electrode of the form:
+
+\begin{equation}
+E=E_{0}+E_{AC}\sin(\omega*t)
+\end{equation}
+
+For small amplitudes of E_{ac}  and assuming the system is operating at a steady-state, the electrode response to the alternating voltage can be described by a linear time-invariant system (LTI). Thus the form of the current must be:
+
+\begin{equation}
+I=I_{0}+I_{AC}\cos(\omega*t+\phi)
+\end{equation}
+
+The complex impedance of the electrode is determined by the phase difference, \phi, and the ratio of the magnitudes of the AC component of the current and voltage:
+
+\begin{flalign}
+& Z=\frac{I_{AC}}{E_{AC}}*e^{j\phi}\\
+& or\notag\\
+& Z=Z'+jZ''
+\end{flalign}
+
+Here we use 'j' as the imaginary unit. Z' and Z'' are the real and imaginary components of Z.
+
+
+
+The impedance spectrum of the niobium was deconvolved using the distribution of relaxation times (DRT) method. We consider the electrode as a collection of infinitesimal discrete circuit elements. This is motivated by the fact that the electrode and its surrounding environment is a 3-dimensional object where each point on the elctrode acts independantly from every other part of the elctrode. This is in contrast with the classical view of electrochemical systems that treat the electrodes as homogeneous objects described by a set of discrete curcuit elements.
+
+The fundamental elctrochemical circuit element is the RC circuit, a resistor and a capacitor in parallel, and can be described by it's time constant, \tau=RC. Taking an infinite number of RC circuits in series we obtain what is known as a Voigt circuit. The impedance of an RC circuit and of an infinite Voight circuit is given by the equations:
+
+\begin{flalign}
+  Z_{RC}&=\frac{R}{1+j\omega\tau}\\
+  Z_{Voigt} &= R + j \omega L + \int_{0}^{\infty} \frac{G(\tau) d \tau}{1 + j \omega \tau}
+\end{flalign}
+
+The function G(\tau) is the distribution of relaxation times of the measured system.
+
+It is more convenient to rewrite the integral in a log scale, since EIS measurements are typically performed over multiple orders of magnitude.
+
+\begin{flalign}
+  Z=&R+j\omega L+\int_{-\infty}^{\infty}\frac{\gamma(ln\tau)dln\tau}{1+j\omega \tau}
+\end{flalign}
+
+To solve for the function \gamma(ln\tau) numerically, we discretize the problem by introducing a test function.
+
+\begin{flalign}
+  \gamma(ln\tau)&\approx\sum_{n=0}^{N}x_{n}\phi_{n}(ln\tau)\\
+  Z&\approx R+j\omega L+\sum_{n=0}^{N}x_{n}\int_{-\infty}^{\infty}\frac{\phi_{n}(ln\tau)dln\tau}{1+j\omega\tau}
+\end{flalign}
+
+or in matrix form:
+
+\begin{flalign}
+  Z=& R\mathbf{1}+\mathbf{A'x}+j(\omega L\mathbf{1}+\mathbf{A''x}) \label{eq:Zmatrix}\\
+  \mathbf{x}=&[x_0,x_1,\ldots,x_N]^T\\
+  \mathbf{A'}=&\int_{-\infty}^{\infty}\frac{\phi_{n}(ln\tau)dln\tau}{1+\omega^2\tau^2}\\
+  \mathbf{A''}=&\int_{-\infty}^{\infty}\frac{-\omega\tau\phi_{n}(ln\tau)dln\tau}{1+\omega^2\tau^2}
+\end{flalign}
+
+to solve for \mathbf{x} we fit equation~\ref{eq:matrix} to the experimental impedance measurements.
+
+\begin{flalign}
+  \min_{\mathbf{x},R,L}[||Z'_{exp}-(R\mathbf{1}+\mathbf{A'x})||^2+||Z''_{exp}-(\omega L\mathbf{1}+\mathbf{A''x})||^2]
+\end{flalign}
+
+
+
+* Experimental
+Four samples were measured using the EIS method.
+
+#+CAPTION: Table
+#+CALL: sample_information[]()
+
+#+RESULTS:
+: | Serial Number   |   Electrolyte Temperature | Nitrogen Doped   |
+: |-----------------+---------------------------+------------------|
+: | S35             |                        21 | No               |
+: | S68             |                        13 | No               |
+: | S67             |                        13 | Yes              |
+: | S75             |                        21 | Yes              |
+
+
+
+* Calculations
+* Conclusion
+This study shows that EIS measurements can be used to differentiate the eching and polishing regimes in niobium EP
+* Supplemental Information
+The EIS measurements were performed using a BioLogic VSP-300 potentiostat
+
+** Data Pre-Processing
+EIS data from the potentiostat is exported as a series of text files, one for each sample, containing the electrode potential, current, frequency, impedance, and run number, which indicates which voltage step the measurement was performed at. To make the data more manageable, we convert the data into a hierarchical data format (HDF5). 
+
+To accomplish this we use the numpy python library to load the text files into arrays, and the h5py library to create the HDF5 file.
+
+#+NAME: initialization
+#+begin_src jupyter-python
+  import numpy as np
+  import h5py
+  import os
+  import pandas as pd
+  from tabulate import tabulate
+#+end_src
+
+#+RESULTS: initialization
+
+#+RESULTS:
+
+First we create a new file to store all the data.
+
+#+begin_src jupyter-python :noweb yes
+  import os
+  import h5py
+  filename = 'Data/data.hdf5'
+
+  if os.path.exists(filename):
+      os.remove(filename)
+  f = h5py.File(filename,'a')
+  print(f)
+#+end_src
+
+#+RESULTS:
+: <HDF5 file "data.hdf5" (mode r+)>
+
+Then we create a group to contain each of the samples.
+
+#+begin_src jupyter-python
+  samples = f.require_group("samples") #
+  print(samples)
+#+end_src
+
+#+RESULTS:
+: <HDF5 group "/samples" (0 members)>
+
+We create the metadata strings for each of the samples in the Data directory.
+
+#+NAME: sample_information
+#+begin_src jupyter-python :results table
+  from tabulate import tabulate
+  import pandas as pd
+
+  d = {'Serial Number': ["S35","S68","S67","S75"],
+       'Electrolyte Temperature': [21,13,13,21],
+       'Nitrogen Doped': ['No','No','Yes','Yes']}
+
+  df = pd.DataFrame(data=d)
+
+  print(tabulate(df, headers="keys", showindex=False, tablefmt="orgtbl"))
+
+#+end_src
+
+#+RESULTS: sample_information
+: | Serial Number   |   Electrolyte Temperature | Nitrogen Doped   |
+: |-----------------+---------------------------+------------------|
+: | S35             |                        21 | No               |
+: | S68             |                        13 | No               |
+: | S67             |                        13 | Yes              |
+: | S75             |                        21 | Yes              |
+
+#+begin_src jupyter-python
+  import numpy as np
+
+  for i, sample in enumerate(df['Serial Number']):
+      f.create_dataset('samples/'+sample+'/electrolyte_temperature', data=np.asarray(df['Electrolyte Temperature']))
+      f.create_dataset('samples/'+sample+'/nitrogen_doped', data=np.asarray(df['Nitrogen Doped']))
+#+end_src
+
+#+RESULTS:
+
+We load the text files containing the EIS data
+
+#+begin_src jupyter-python
+  import os
+  import re
+
+  # get the list of files and directories in the current directory
+  directory = 'Data/text_files/'
+  text_files = os.listdir(directory)
+
+  samples = f['samples']
+
+  # print each item in the list
+  for file in text_files:
+      for sample in samples:
+          if file.startswith(sample):
+              data = pd.read_csv(directory+file,delimiter='\t')
+              data = data.drop('Unnamed: 6', axis=1)
+              for key in data.keys():
+                  group_name = re.sub(r'[^\w\s]', '', key)
+                  samples[sample].create_dataset(group_name,data=np.asarray(data[key]))
+
+#+end_src
+
+#+RESULTS:
+
+
+The raw data does not separate the individual EIS measurements
+
+#+begin_src jupyter-python
+  import numpy as np 
+
+  for sample_name in samples:
+        sample = samples[sample_name]
+
+        Ewe = sample['EweV']
+        I = sample['ImA']
+        ImZ = -sample['ImZOhm']
+        ReZ = sample['ReZOhm']
+        freq = sample['freqHz']
+        cycle_number = sample['cycle number']
+
+        nonzero_measurements = np.where(freq!=0)
+
+        Ewe = Ewe[nonzero_measurements]
+        I = I[nonzero_measurements]
+        ImZ = ImZ[nonzero_measurements]
+        ReZ = ReZ[nonzero_measurements]
+        freq = freq[nonzero_measurements]
+        cycle_number = cycle_number[nonzero_measurements]
+
+        for i in range(cycle_number.min(),cycle_number.max()):
+            
+
+
+#+end_src
+
+#+RESULTS:
