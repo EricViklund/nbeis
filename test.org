@@ -2,7 +2,7 @@
 #+author: Eric Viklund
 #+date: \date
 #+STARTUP: latexpreview
-#+PROPERTY: header-args:jupyter-python :session py :async yes :kernel test-env
+#+PROPERTY: header-args:jupyter-python :session py :async yes :kernel sense
 
 * Introduction
 *Using* electrochemical impedance spectroscopy, we have devised a method of sensing the microscopic surface conditions on the surface of niobium as it is undergoing an electrochemical polishing (EP) treatment.
@@ -60,20 +60,22 @@ or in matrix form:
 \begin{flalign}
   Z=& R\mathbf{1}+\mathbf{A'x}+j(\omega L\mathbf{1}+\mathbf{A''x}) \label{eq:Zmatrix}\\
   \mathbf{x}=&[x_0,x_1,\ldots,x_N]^T\\
-  \mathbf{A'}=&\int_{-\infty}^{\infty}\frac{\phi_{n}(ln\tau)dln\tau}{1+\omega^2\tau^2}\\
-  \mathbf{A''}=&\int_{-\infty}^{\infty}\frac{-\omega\tau\phi_{n}(ln\tau)dln\tau}{1+\omega^2\tau^2}
+  \mathbf{A'}=&\int_{-\infty}^{\infty}\frac{\phi_{n}(ln\tau)dln\tau}{1+\omega^2\tau^2}\label{eq:A'}\\
+  \mathbf{A''}=&\int_{-\infty}^{\infty}\frac{-\omega\tau\phi_{n}(ln\tau)dln\tau}{1+\omega^2\tau^2}\label{eq:A''}
 \end{flalign}
 
-to solve for \mathbf{x} we fit equation~\ref{eq:matrix} to the experimental impedance measurements.
+to solve for \mathbf{x} we fit equation~\ref{eq:matrix} to the experimental impedance measurements by minimizing the square difference. The matrix \mathbf{M} is a normalization term to prevent overfitting.
 
 \begin{flalign}
-  \min_{\mathbf{x},R,L}[||Z'_{exp}-(R\mathbf{1}+\mathbf{A'x})||^2+||Z''_{exp}-(\omega L\mathbf{1}+\mathbf{A''x})||^2]
+  \min_{\mathbf{x},R,L}[||Z'_{exp}-(R\mathbf{1}+\mathbf{A'x})||^2+||Z''_{exp}-(\omega L\mathbf{1}+\mathbf{A''x})||^2+|\mathbf{xMx}^{T}|]
 \end{flalign}
+
+
 
 
 
 * Experimental
-Four samples were measured using the EIS method.
+Four samples were measured using the EIS method. To examine the effect of nitrogen doping on the electropolishing reaction, two of the samples were were exposed to nitrogen gas at 800~\unit{\degree\celcius} for two minutes. To test the effect of cold EP, the electrolyte temperature was lowered to 13~\unit{\degree\celsius} during two of the sample measurements.
 
 #+CAPTION: Table
 #+CALL: sample_information[]()
@@ -87,8 +89,135 @@ Four samples were measured using the EIS method.
 : | S75             |                        21 | Yes              |
 
 
+#+begin_src jupyter-python :session py :kernel sense :results file
+  import numpy as np
+  import h5py
+  import matplotlib.pyplot as plt
+
+  mm = 0.03937
+
+  data = h5py.File('./Data/data.hdf5')
+
+  samples = data['samples']
+
+  sample_serial_numbers = samples.keys()
+
+  fig = plt.figure(figsize=(7,12))
+  subfigs = fig.subfigures(nrows=4,ncols=1)
+
+  for row, sample_serial_number in enumerate(sample_serial_numbers):
+      sample_data = samples[sample_serial_number+'/data']
+
+
+      subfig = subfigs[row]
+      subfig.suptitle('Sample Serial Number: '+sample_serial_number)
+
+      re_ax, im_ax = subfig.subplots(nrows=1, ncols=2)    
+
+      re_ax.set_xscale('log')
+      im_ax.set_xscale('log')
+
+
+      for cycle in sample_data.keys():
+          cycle_data = sample_data[cycle]
+
+          freq = np.array(cycle_data['freq'])
+          ReZ = np.array(cycle_data['ReZ'])
+          ImZ = np.array(cycle_data['ImZ'])
+
+          re_ax.scatter(freq,ReZ+int(cycle),marker='x',s=5)
+          im_ax.scatter(freq,ImZ+int(cycle),marker='x',s=5)
+
+          re_ax.set_ylim(0,40)
+          im_ax.set_ylim(-10,30)
+
+#+end_src
+
+#+RESULTS:
+[[file:./.ob-jupyter/87746b76071a488f0ac7fa8dbe8a932e1b111f06.png]]
+
+
 
 * Calculations
+
+** Test Function
+
+To discretize the DRT function, we use a set of Gaussian test functions evenly spaced on the log scale.
+
+\begin{flalign}
+  \phi_{n}(ln\tau) &= x_{n}e^{\frac{ln\tau-ln\tau_{n}}{\mu}}
+\end{flalign}
+
+For a series of impedance measurements measured at frequencies (f_{1},f_{2} \ellipses f_{m} \ellipses f_{M}) in a descending frequency order and equally spaced in on the log frequency scale, the centers of the gaussian test functions, ln\tau_{n} are chosen to be 1/f_{m}. We note that this is an arbitrary decission chosen for convenience and the spacing between test functions and the total number of test functions used can take any value. However, changing the spacing to larger or smaller values or adding test functions outside the range of measured frequencies would have no real physical meaning.
+
+The width, \mu, of the gaussian function is set such that the full width at half maximum (FWHM) is equal to ln\tau_{n+1}-ln\tau_{n-1}. This ensures a good compromise between being able to fit rapidly changing regions of the DRT function and having enough overlapping regions between neighboring test functions.
+
+#+begin_src jupyter-python
+  import numpy as np
+  from scipy.special import hermite
+
+  def Gaussian_Func(x,sigma):
+      y = np.exp(-x**2/(2*sigma**2)) / (2.5066*sigma)
+      return y
+
+  def Gaussian_Derivative(x,n,sigma):
+      hermite_poly = hermite(n)
+      y = (-1)**n * Gaussian_Func(x,sigma) * hermite_poly(x/sigma) * (1/sigma)**n
+      return y
+
+#+end_src
+
+#+RESULTS:
+:RESULTS:
+# [goto error]
+: [0;31m---------------------------------------------------------------------------[0m
+: [0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+: Cell [0;32mIn[3], line 2[0m
+: [1;32m      1[0m [38;5;28;01mimport[39;00m [38;5;21;01mnumpy[39;00m [38;5;28;01mas[39;00m [38;5;21;01mnp[39;00m
+: [0;32m----> 2[0m [38;5;28;01mfrom[39;00m [38;5;21;01mscipy[39;00m[38;5;21;01m.[39;00m[38;5;21;01mspecial[39;00m [38;5;28;01mimport[39;00m hermite
+: [1;32m      4[0m [38;5;28;01mdef[39;00m [38;5;21mGaussian_Func[39m(x,sigma):
+: [1;32m      5[0m     y [38;5;241m=[39m np[38;5;241m.[39mexp([38;5;241m-[39mx[38;5;241m*[39m[38;5;241m*[39m[38;5;241m2[39m[38;5;241m/[39m([38;5;241m2[39m[38;5;241m*[39msigma[38;5;241m*[39m[38;5;241m*[39m[38;5;241m2[39m)) [38;5;241m/[39m ([38;5;241m2.5066[39m[38;5;241m*[39msigma)
+: 
+: [0;31mModuleNotFoundError[0m: No module named 'scipy'
+:END:
+
+** Numerical Integration of \mathbf{A'} and \mathbf{A''}
+
+To calculate the matrices \mathbf{A'} and \mathbf{A''}, the integral~\ref{eq:A'} and~ \ref{eq:A''} must be integrated numerically. This calculation is performed using the Gaussian quadrature method.
+
+\begin{flalign}
+  \int_{a}^{b}f(x)dx \approx & \frac{b-a}{2} \sum_{i=1}^{n}w_{i}f(\frac{b-a}{2}\xi_{i}+\frac{b-a}{2})
+\end{flalign}
+
+Here \xi are the roots of the n-th Legendre polynomial and w are the weights are calculated from the derivative of the n-th Legendre polynomial using the equation
+
+\begin{flalign}
+  w_{i} =& -\frac{2}{(1-\xi_{i}^{2})(P'_{n}(\xi_{i}))}
+\end{flalign}
+
+#+begin_src jupyter-python
+  import numpy as np
+
+  def quad(f, a, b, n=5):
+      # Generate the quadrature rule coefficients from the numbpy library
+      x, w = np.polynomial.legendre.leggauss(n)
+    
+      # Scale the quadrature points and weights to the interval [a, b]
+      x_scaled = 0.5 * (b - a) * x + 0.5 * (b + a)
+      w_scaled = 0.5 * (b - a) * w
+    
+      # Evaluate the function at the quadrature points and sum up the weighted contributions
+      integral = np.sum(w_scaled[:,None] * f(x_scaled),axis=0)
+    
+      return integral
+
+#+end_src
+
+#+RESULTS:
+
+
+
+
 * Conclusion
 This study shows that EIS measurements can be used to differentiate the eching and polishing regimes in niobium EP
 * Supplemental Information
@@ -118,7 +247,6 @@ First we create a new file to store all the data.
   import os
   import h5py
   filename = 'Data/data.hdf5'
-
   if os.path.exists(filename):
       os.remove(filename)
   f = h5py.File(filename,'a')
@@ -179,55 +307,46 @@ We load the text files containing the EIS data
   import os
   import re
 
-  # get the list of files and directories in the current directory
+  # get the list of files and directories in the raw data  directory
   directory = 'Data/text_files/'
   text_files = os.listdir(directory)
 
+  # get the samples from the data file
   samples = f['samples']
 
-  # print each item in the list
+  # add the data to each sample
   for file in text_files:
       for sample in samples:
           if file.startswith(sample):
               data = pd.read_csv(directory+file,delimiter='\t')
               data = data.drop('Unnamed: 6', axis=1)
-              for key in data.keys():
-                  group_name = re.sub(r'[^\w\s]', '', key)
-                  samples[sample].create_dataset(group_name,data=np.asarray(data[key]))
 
+              Ewe = np.asarray(data['<Ewe>/V'])
+              I = np.asarray(data['<I>/mA'])
+              ImZ = np.asarray(-data['-Im(Z)/Ohm'])
+              ReZ = np.asarray(data['Re(Z)/Ohm'])
+              freq = np.asarray(data['freq/Hz'])
+              cycle_number = np.asarray(data['cycle number'],dtype='uint8')
+
+              nonzero_measurements = np.where(freq!=0)
+
+              Ewe = Ewe[nonzero_measurements]
+              I = I[nonzero_measurements]
+              ImZ = ImZ[nonzero_measurements]
+              ReZ = ReZ[nonzero_measurements]
+              freq = freq[nonzero_measurements]
+              cycle_number = cycle_number[nonzero_measurements]
+
+              for cycle in range(cycle_number.min(),cycle_number.max()):
+
+                  cycle_measurements = np.where(cycle_number == cycle)
+
+                  samples[sample].create_dataset('data/'+str(cycle)+'/Ewe',data=np.asarray(Ewe[cycle_measurements]))
+                  samples[sample].create_dataset('data/'+str(cycle)+'/I',data=np.asarray(I[cycle_measurements]))
+                  samples[sample].create_dataset('data/'+str(cycle)+'/ImZ',data=np.asarray(ImZ[cycle_measurements]))
+                  samples[sample].create_dataset('data/'+str(cycle)+'/ReZ',data=np.asarray(ReZ[cycle_measurements]))
+                  samples[sample].create_dataset('data/'+str(cycle)+'/freq',data=np.asarray(freq[cycle_measurements]))
 #+end_src
 
 #+RESULTS:
 
-
-The raw data does not separate the individual EIS measurements
-
-#+begin_src jupyter-python
-  import numpy as np 
-
-  for sample_name in samples:
-        sample = samples[sample_name]
-
-        Ewe = sample['EweV']
-        I = sample['ImA']
-        ImZ = -sample['ImZOhm']
-        ReZ = sample['ReZOhm']
-        freq = sample['freqHz']
-        cycle_number = sample['cycle number']
-
-        nonzero_measurements = np.where(freq!=0)
-
-        Ewe = Ewe[nonzero_measurements]
-        I = I[nonzero_measurements]
-        ImZ = ImZ[nonzero_measurements]
-        ReZ = ReZ[nonzero_measurements]
-        freq = freq[nonzero_measurements]
-        cycle_number = cycle_number[nonzero_measurements]
-
-        for i in range(cycle_number.min(),cycle_number.max()):
-            
-
-
-#+end_src
-
-#+RESULTS:
