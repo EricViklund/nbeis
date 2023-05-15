@@ -4,8 +4,16 @@
 #+STARTUP: latexpreview
 #+PROPERTY: header-args:jupyter-python :session py :async yes :kernel sense
 
+* Abstract
+*Using* electrochemical impedance spectroscopy, we have devised a method of sensing the microscopic surface conditions on the surface of niobium as it is undergoing an electrochemical polishing (EP) treatment. The method uses electrochemical impedance spectroscopy (EIS) to gather information on the surface state of the electrode without disrupting the polishing reaction. The EIS data is analyzed using a so-called distribution of relaxation times (DRT) method. Using DRT, the EIS data can be deconvolved into discrete relaxation time peaks without any apriori knowledge of the electrode dynamics. By analyzing the relaxation time peaks, we are able to distinguish two distinct modes of the EP reaction. As the polishing voltage is increased, the electrode transitions from the low voltage EP mode, characterized by two relaxation time peaks, to the high voltage EP mode, characterized by three relaxation time peaks. By analyzing EPed samples, we show that samples polished in the low voltage mode have significantly higher surface roughness due to grain etching and faceting. Samples polished in the high voltage mode obtain a smooth surface finish. This shows that EIS combined with DRT analysis can be use to predict etching on EPed Nb. This method can also be performed before or during the EP, which could allow for adjustment of polishing parameters to guarantee a smooth cavity surface finish.
+
 * Introduction
-*Using* electrochemical impedance spectroscopy, we have devised a method of sensing the microscopic surface conditions on the surface of niobium as it is undergoing an electrochemical polishing (EP) treatment.
+Electropolishing (EP) is commonly used to polish Nb SRF cavities to nanometer scale surface roughness. 
+
+EIS has been used to study the chemistry of niobium in HF electrolytes before\ref{tian_2008,ranjith2018anodic,cattarin2002nb}. However, these studies have only analyzed the spectrum using qualitative methods or traditional equivalent circuit fitting techniques.
+
+
+
 * Theory
 An alternating voltage is applied to the niobium electrode of the form:
 
