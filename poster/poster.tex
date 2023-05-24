@@ -1,0 +1,83 @@
+\documentclass{beamer}
+\mode<presentation>
+\usepackage[orientation=portrait,size=a0,scale=1.4]{beamerposter}
+\usetheme{gemini}
+\usecolortheme{gemini}
+\usepackage{siunitx}
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\usepackage{natbib}
+ 
+
+
+\usepackage{filecontents}
+\begin{filecontents*}{\jobname.bib}
+    @article{posen2021advances,
+        title={Advances in Nb\textsubscript{3}Sn superconducting radiofrequency cavities towards first practical accelerator applications},
+        author={Posen, Sam and Lee, Jaeyel and Seidman, David N and Romanenko, Alexander and Tennis, Brad and Melnychuk, OS and Sergatskov, DA},
+        journal={Superconductor Science and Technology},
+        volume={34},
+        number={2},
+        pages={025007},
+        year={2021},
+        publisher={IOP Publishing}
+    }   
+\end{filecontents*}
+
+\setbeamertemplate{bibliography entry article}{}
+\setbeamertemplate{bibliography entry title}{}
+\setbeamertemplate{bibliography entry location}{}
+\setbeamertemplate{bibliography entry note}{}
+
+
+\title{Analysis of Niobium Electropolishing Using Electrochemical Impedance Spectroscopy}%
+\author{Eric Viklund \inst{1, 2} \and Tim Ring \inst{2} \and Vijay Chouhan \inst{2} \and David N. Seidman \inst{1} \and Sam Posen \inst{2}}
+\institute[shortinst]{\inst{1}Department of Materials Science and Engineering, Northwestern University\\
+\inst{2}Fermi National Accelerator Laboratory}
+\date{\today}%
+
+\logoleft{\parbox{0.05\textwidth}{\includegraphics[width=7cm]{logos/Northwestern-Logo-White.png} \newline \vspace{1cm} \includegraphics[width=7cm]{logos/FNAL-Logo-White.png}}}
+\logoright{\includegraphics[width=7cm]{logos/IPAC23_logo_white.png}}
+
+
+\begin{document}%
+    \begin{frame}{}
+        %\maketitle
+        \begin{columns}[t]
+            \begin{column}{0.32\linewidth}
+                \begin{alertblock}{\label{sec:introduction}Key Findings}
+                    \begin{itemize}
+                        \item Centrifugal barrel polishing (CBP) is an effective method of polishing Nb\textsubscript{3}Sn coated cavities.
+                        \item Nb\textsubscript{3}Sn films polished using CBP can acheive less than 20~nm surface roughness with minimal material removal.
+                        \item CBP treatment of a Nb\textsubscript{3}Sn cavity leads to a significant increase in the maximum accelerating gradient.
+                        \item A secondary recoating procedure is required to achive this increase.
+                    \end{itemize}
+                \end{alertblock}
+
+            \end{column}
+
+
+
+
+
+            \begin{column}{0.32\linewidth}    
+
+            \end{column}
+
+
+
+
+
+            \begin{column}{0.32\textwidth}
+
+
+                \begin{block}{\label{sec:acknowledgements}Acknowledgements}
+
+                    This manuscript has been authored by Fermi Research Alliance, LLC under Contract No. DE-AC02-07CH11359 with the U.S. Department of Energy, Office of Science, Office of High Energy Physics.
+
+                    \centering \includegraphics[width=10cm]{logos/RGB_Color-Seal_Green-Mark_SC_Horizontal.png}
+                \end{block}
+            \end{column}
+        \end{columns}
+    \end{frame}
+\end{document}
