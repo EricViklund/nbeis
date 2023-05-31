@@ -158,7 +158,7 @@ Four samples were measured using the EIS method. To examine the effect of nitrog
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/87746b76071a488f0ac7fa8dbe8a932e1b111f06.png]]
+[[file:./.ob-jupyter/f8d8a71c3da0461e22edff904323444b338efcbc.png]]
 
 
 
@@ -193,18 +193,6 @@ The width, \mu, of the gaussian function is set such that the full width at half
 #+end_src
 
 #+RESULTS:
-:RESULTS:
-# [goto error]
-: [0;31m---------------------------------------------------------------------------[0m
-: [0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-: Cell [0;32mIn[3], line 2[0m
-: [1;32m      1[0m [38;5;28;01mimport[39;00m [38;5;21;01mnumpy[39;00m [38;5;28;01mas[39;00m [38;5;21;01mnp[39;00m
-: [0;32m----> 2[0m [38;5;28;01mfrom[39;00m [38;5;21;01mscipy[39;00m[38;5;21;01m.[39;00m[38;5;21;01mspecial[39;00m [38;5;28;01mimport[39;00m hermite
-: [1;32m      4[0m [38;5;28;01mdef[39;00m [38;5;21mGaussian_Func[39m(x,sigma):
-: [1;32m      5[0m     y [38;5;241m=[39m np[38;5;241m.[39mexp([38;5;241m-[39mx[38;5;241m*[39m[38;5;241m*[39m[38;5;241m2[39m[38;5;241m/[39m([38;5;241m2[39m[38;5;241m*[39msigma[38;5;241m*[39m[38;5;241m*[39m[38;5;241m2[39m)) [38;5;241m/[39m ([38;5;241m2.5066[39m[38;5;241m*[39msigma)
-: 
-: [0;31mModuleNotFoundError[0m: No module named 'scipy'
-:END:
 
 ** Numerical Integration of \mathbf{A'} and \mathbf{A''}
 
@@ -284,6 +272,8 @@ This funtion performs the integrals on the integrands for each pair of experimen
 
 #+end_src
 
+#+RESULTS:
+
 ** Cost Function
 
 The cost function is defined by
@@ -315,11 +305,17 @@ The cost function is defined by
 
 #+end_src
 
+#+RESULTS:
+
+
+
 ** Minimization Algorithm
 
-This function minimizes the cost function for a given set of experimental data.
+
+
 
 #+begin_src jupyter-python
+from scipy.optimize import minimize
 def DRT_Fit(measured_frequencies, measured_Z, fitting_frequencies, reg_params):
     
     f_m = measured_frequencies
@@ -366,16 +362,211 @@ def DRT_Fit(measured_frequencies, measured_Z, fitting_frequencies, reg_params):
     return x_re, x_im, R, L
 #+end_src
 
-
-
-* Results
+#+RESULTS:
 
 The minimization algorithm is applied to each of the EIS spectrum.
 
 #+begin_src jupyter-python
   import numpy as np
   import h5py
+  import time
+
+
+  data = h5py.File('./Data/data.hdf5')
+
+  samples = data['samples']
+
+  sample_serial_numbers = samples.keys()
+
+  #Generate regularization hyper-parameter array
+  reg_params = np.array((1e-3,2e-2,6e-2))
+
+  for row, sample_serial_number in enumerate(sample_serial_numbers):
+      sample_data = samples[sample_serial_number+'/data']
+
+      potential_steps = len(sample_data.keys())
+
+      for cycle in sample_data.keys():
+          cycle_data = sample_data[cycle]
+
+          Freq = np.array(cycle_data['freq'])
+          ReZ = np.array(cycle_data['ReZ'])
+          ImZ = np.array(cycle_data['ImZ'])
+
+          Z = ReZ + 1j*ImZ
+
+          #PARAMS
+          f_min = np.min(Freq)
+          f_max = np.max(Freq)
+          fitting_params_per_decade = 8
+
+          #Convert to log frequency
+          log_f_min = np.log(1e0)
+          log_f_max = np.log(1e6)
+
+          #Generate the fitting test function offsets
+          number_of_fitting_params = int(fitting_params_per_decade*(log_f_max-log_f_min))
+          log_f_n = np.linspace(log_f_min,log_f_max,number_of_fitting_params)
+          gaussian_width = (np.max(log_f_n)-np.min(log_f_n))/log_f_n.shape[0]
+
+          #Convert experimental frequencies to log space
+          log_Freq = np.log(Freq)
+
+          x_re = np.zeros((number_of_fitting_params))
+          x_im = np.zeros((number_of_fitting_params))
+          R = 0
+          L = 0
+
+          # start the timer
+          start_time = time.time()
+
+          x_re, x_im, R, L = DRT_Fit(log_Freq, Z, log_f_n, reg_params)
+
+
+          # end the timer
+          end_time = time.time()
+
+          # calculate the elapsed time
+          elapsed_time = end_time - start_time
+
+          print("Cycle: "+cycle+" Elapsed time: {:.2f} seconds".format(elapsed_time))
+
+
+          del cycle_data['R']
+          cycle_data.create_dataset('R',data=R)
+          del cycle_data['L']
+          cycle_data.create_dataset('L',data=L)
+          del cycle_data['x_re']
+          cycle_data.create_dataset('x_re',data=x_re)
+          del cycle_data['x_im']
+          cycle_data.create_dataset('x_im',data=x_im)
+
+#+end_src
+
+#+RESULTS:
+#+begin_example
+  Cycle: 1 Elapsed time: 3.05 seconds
+  Cycle: 2 Elapsed time: 2.59 seconds
+  Cycle: 3 Elapsed time: 2.67 seconds
+  Cycle: 4 Elapsed time: 3.33 seconds
+  Cycle: 5 Elapsed time: 2.69 seconds
+  Cycle: 6 Elapsed time: 2.96 seconds
+  Cycle: 7 Elapsed time: 1.28 seconds
+  Cycle: 8 Elapsed time: 3.70 seconds
+  Cycle: 9 Elapsed time: 3.14 seconds
+  Cycle: 10 Elapsed time: 1.63 seconds
+  Cycle: 11 Elapsed time: 3.70 seconds
+  Cycle: 12 Elapsed time: 5.60 seconds
+  Cycle: 13 Elapsed time: 2.84 seconds
+  Cycle: 14 Elapsed time: 4.82 seconds
+  Cycle: 15 Elapsed time: 2.15 seconds
+  Cycle: 16 Elapsed time: 2.61 seconds
+  Cycle: 17 Elapsed time: 3.11 seconds
+  Cycle: 18 Elapsed time: 2.43 seconds
+  Cycle: 19 Elapsed time: 3.80 seconds
+  Cycle: 20 Elapsed time: 3.11 seconds
+  Cycle: 21 Elapsed time: 4.04 seconds
+  Cycle: 22 Elapsed time: 2.55 seconds
+  Cycle: 23 Elapsed time: 2.83 seconds
+  Cycle: 24 Elapsed time: 1.41 seconds
+  Cycle: 25 Elapsed time: 2.81 seconds
+  Cycle: 26 Elapsed time: 4.72 seconds
+  Cycle: 27 Elapsed time: 4.57 seconds
+  Cycle: 28 Elapsed time: 3.94 seconds
+  Cycle: 1 Elapsed time: 4.17 seconds
+  Cycle: 2 Elapsed time: 1.71 seconds
+  Cycle: 3 Elapsed time: 1.71 seconds
+  Cycle: 4 Elapsed time: 2.42 seconds
+  Cycle: 5 Elapsed time: 1.39 seconds
+  Cycle: 6 Elapsed time: 2.08 seconds
+  Cycle: 7 Elapsed time: 1.41 seconds
+  Cycle: 8 Elapsed time: 3.20 seconds
+  Cycle: 9 Elapsed time: 2.40 seconds
+  Cycle: 10 Elapsed time: 2.20 seconds
+  Cycle: 11 Elapsed time: 2.69 seconds
+  Cycle: 12 Elapsed time: 2.05 seconds
+  Cycle: 13 Elapsed time: 4.20 seconds
+  Cycle: 14 Elapsed time: 2.01 seconds
+  Cycle: 15 Elapsed time: 4.01 seconds
+  Cycle: 16 Elapsed time: 3.40 seconds
+  Cycle: 17 Elapsed time: 2.75 seconds
+  Cycle: 18 Elapsed time: 6.53 seconds
+  Cycle: 19 Elapsed time: 2.74 seconds
+  Cycle: 20 Elapsed time: 3.55 seconds
+  Cycle: 21 Elapsed time: 2.67 seconds
+  Cycle: 22 Elapsed time: 1.95 seconds
+  Cycle: 23 Elapsed time: 4.57 seconds
+  Cycle: 24 Elapsed time: 2.12 seconds
+  Cycle: 25 Elapsed time: 1.94 seconds
+  Cycle: 26 Elapsed time: 4.64 seconds
+  Cycle: 27 Elapsed time: 6.42 seconds
+  Cycle: 28 Elapsed time: 4.38 seconds
+  Cycle: 1 Elapsed time: 3.33 seconds
+  Cycle: 2 Elapsed time: 1.65 seconds
+  Cycle: 3 Elapsed time: 2.52 seconds
+  Cycle: 4 Elapsed time: 2.71 seconds
+  Cycle: 5 Elapsed time: 2.17 seconds
+  Cycle: 6 Elapsed time: 2.42 seconds
+  Cycle: 7 Elapsed time: 3.04 seconds
+  Cycle: 8 Elapsed time: 2.75 seconds
+  Cycle: 9 Elapsed time: 1.58 seconds
+  Cycle: 10 Elapsed time: 3.99 seconds
+  Cycle: 11 Elapsed time: 2.48 seconds
+  Cycle: 12 Elapsed time: 1.65 seconds
+  Cycle: 13 Elapsed time: 2.16 seconds
+  Cycle: 14 Elapsed time: 2.81 seconds
+  Cycle: 15 Elapsed time: 6.02 seconds
+  Cycle: 16 Elapsed time: 3.19 seconds
+  Cycle: 17 Elapsed time: 3.23 seconds
+  Cycle: 18 Elapsed time: 3.27 seconds
+  Cycle: 19 Elapsed time: 4.62 seconds
+  Cycle: 20 Elapsed time: 2.77 seconds
+  Cycle: 21 Elapsed time: 3.02 seconds
+  Cycle: 22 Elapsed time: 3.11 seconds
+  Cycle: 23 Elapsed time: 2.69 seconds
+  Cycle: 24 Elapsed time: 4.88 seconds
+  Cycle: 25 Elapsed time: 4.89 seconds
+  Cycle: 26 Elapsed time: 4.09 seconds
+  Cycle: 27 Elapsed time: 2.35 seconds
+  Cycle: 28 Elapsed time: 4.42 seconds
+  Cycle: 1 Elapsed time: 1.94 seconds
+  Cycle: 2 Elapsed time: 3.23 seconds
+  Cycle: 3 Elapsed time: 3.24 seconds
+  Cycle: 4 Elapsed time: 0.81 seconds
+  Cycle: 5 Elapsed time: 0.76 seconds
+  Cycle: 6 Elapsed time: 2.82 seconds
+  Cycle: 7 Elapsed time: 0.66 seconds
+  Cycle: 8 Elapsed time: 2.26 seconds
+  Cycle: 9 Elapsed time: 2.27 seconds
+  Cycle: 10 Elapsed time: 3.98 seconds
+  Cycle: 11 Elapsed time: 3.30 seconds
+  Cycle: 12 Elapsed time: 6.38 seconds
+  Cycle: 13 Elapsed time: 3.13 seconds
+  Cycle: 14 Elapsed time: 3.19 seconds
+  Cycle: 15 Elapsed time: 2.56 seconds
+  Cycle: 16 Elapsed time: 6.46 seconds
+  Cycle: 17 Elapsed time: 3.50 seconds
+  Cycle: 18 Elapsed time: 5.42 seconds
+  Cycle: 19 Elapsed time: 3.36 seconds
+  Cycle: 20 Elapsed time: 3.68 seconds
+  Cycle: 21 Elapsed time: 5.25 seconds
+  Cycle: 22 Elapsed time: 4.86 seconds
+  Cycle: 23 Elapsed time: 4.17 seconds
+  Cycle: 24 Elapsed time: 1.85 seconds
+  Cycle: 25 Elapsed time: 1.77 seconds
+  Cycle: 26 Elapsed time: 2.28 seconds
+  Cycle: 27 Elapsed time: 3.70 seconds
+  Cycle: 28 Elapsed time: 2.45 seconds
+#+end_example
+
+
+* Results
+
+#+begin_src jupyter-python
+  import numpy as np
+  import h5py
   import matplotlib.pyplot as plt
+  from matplotlib.colors import LogNorm, SymLogNorm
 
   mm = 0.03937
 
@@ -388,35 +579,105 @@ The minimization algorithm is applied to each of the EIS spectrum.
   fig = plt.figure(figsize=(7,12))
   subfigs = fig.subfigures(nrows=4,ncols=1)
 
+
   for row, sample_serial_number in enumerate(sample_serial_numbers):
       sample_data = samples[sample_serial_number+'/data']
 
-
-      subfig = subfigs[row]
-      subfig.suptitle('Sample Serial Number: '+sample_serial_number)
-
-      re_ax, im_ax = subfig.subplots(nrows=1, ncols=2)    
-
-      re_ax.set_xscale('log')
-      im_ax.set_xscale('log')
-
+      x_re = []
+      x_im = []
+      Current = []
+      Current_min = []
+      Current_max = []
+      Electrode_Potential = []
 
       for cycle in sample_data.keys():
-          cycle_data = sample_data[cycle]
+          cycle_data = sample_data[str(cycle)]
+          x_re.append(cycle_data['x_re'])
+          x_im.append(cycle_data['x_im'])
+          Current.append(np.mean(cycle_data['I']))
+          Current_min.append(np.min(cycle_data['I']))
+          Current_max.append(np.max(cycle_data['I']))
+          Electrode_Potential.append(np.mean(cycle_data['Ewe']))
 
-          freq = np.array(cycle_data['freq'])
-          ReZ = np.array(cycle_data['ReZ'])
-          ImZ = np.array(cycle_data['ImZ'])
+      x_re = np.array(x_re).T
+      x_im = np.array(x_im).T
+      Current = np.array(Current).T
+      Current_min = np.array(Current_min).T
+      Current_max = np.array(Current_max).T
+      Electrode_Potential = np.array(Electrode_Potential).T
 
-          re_ax.scatter(freq,ReZ+int(cycle),marker='x',s=5)
-          im_ax.scatter(freq,ImZ+int(cycle),marker='x',s=5)
 
-          re_ax.set_ylim(0,40)
-          im_ax.set_ylim(-10,30)
 
-          
+      x_pos = (x_re - x_im)/2
+      x_neg = (x_re + x_im)/2
+      """Plotting"""
+
+      # Plot gamma functions
+      #Params
+      plot_freq_min = 1e0
+      plot_freq_max = 1e6
+      plot_points_per_decade = 10
+
+
+      #Convert to log
+      log_plot_freq_min = np.log(plot_freq_min)
+      log_plot_freq_max = np.log(plot_freq_max)
+      plot_points = int(plot_points_per_decade*(log_plot_freq_max-log_plot_freq_min))
+
+      #Generate plotting frequencies
+      log_plot_freq = np.linspace(log_plot_freq_min,log_plot_freq_max,plot_points)
+
+      pos_plot_freq = np.exp(log_plot_freq)
+      plot_freq = np.concatenate((np.flip(-pos_plot_freq),pos_plot_freq))
+
+
+      gamma_pos = np.sum(x_pos[None,:,:]*Gaussian_Func(log_plot_freq[:,None,None]-log_f_n[None,:,None],gaussian_width),axis=1)
+      gamma_neg = np.sum(x_neg[None,:,:]*Gaussian_Func(log_plot_freq[:,None,None]-log_f_n[None,:,None],gaussian_width),axis=1)
+
+      gamma = np.concatenate((np.flip(gamma_neg),gamma_pos))
+
+
+      #ax1, ax2 = subfig.subplots(nrows=1, ncols=2)    
+      fig, (ax1, ax2) = plt.subplots(ncols=2,dpi=300,sharey=True,gridspec_kw={'width_ratios': [1, 5]})
+
+      X,Y = np.meshgrid(plot_freq,Electrode_Potential,indexing='ij')
+
+      mesh = ax2.pcolormesh(X,Y,gamma,shading='nearest', cmap='viridis')
+      mesh.set_norm(SymLogNorm(linthresh=1e0,vmin=-5e-1,vmax=5e-1))
+      cbar = fig.colorbar(mesh)
+
+      ax2.set_xscale('symlog')
+      ax2.set_xlabel('Frequency [rad/s]')
+      ax2.set_xticks([-1e5,-1e3,-1e1,0,1e1,1e3,1e5])
+      ax2.set_ylim(0,5)
+
+      ax1.plot(Current/1000,Electrode_Potential)
+      ax1.fill_betweenx(Electrode_Potential, Current_min/1000, Current_max/1000, alpha = 0.2)
+      ax1.set_ylabel('Polishing Voltage [V]')
+      ax1.set_xlabel('Current [A]')
+      ax1.invert_xaxis()
+      # ax1.set_xticks([0.1,0.2])
+      ax1.set_yticks(np.arange(0,6,1))
+      # ax1.set_xlim(0.2,0)
+
+      fig.subplots_adjust(wspace = 0)
+
+
+
 
 #+end_src
+
+#+RESULTS:
+:RESULTS:
+: /tmp/ipykernel_2456/1520470813.py:82: UserWarning: All values for SymLogScale are below linthresh, making it effectively linear. You likely should lower the value of linthresh. 
+:   cbar = fig.colorbar(mesh)
+: <Figure size 700x1200 with 0 Axes>
+[[file:./.ob-jupyter/9000848975e1fcf282c0de93e9243036cd4c6b9d.png]]
+[[file:./.ob-jupyter/9301ddd1fc557957574ac5a44f21ce228241de13.png]]
+[[file:./.ob-jupyter/b734ca150758588d1254d755a766dd71e1881d9f.png]]
+[[file:./.ob-jupyter/e6b5c95e1f14aef3fee493d30c4c7391ba832bda.png]]
+:END:
+
 
 * Conclusion
 This study shows that EIS measurements can be used to differentiate the eching and polishing regimes in niobium EP
@@ -537,15 +798,17 @@ We load the text files containing the EIS data
               freq = freq[nonzero_measurements]
               cycle_number = cycle_number[nonzero_measurements]
 
+              data_group = samples[sample].create_group('data',track_order=True)
+
               for cycle in range(cycle_number.min(),cycle_number.max()):
 
                   cycle_measurements = np.where(cycle_number == cycle)
 
-                  samples[sample].create_dataset('data/'+str(cycle)+'/Ewe',data=np.asarray(Ewe[cycle_measurements]))
-                  samples[sample].create_dataset('data/'+str(cycle)+'/I',data=np.asarray(I[cycle_measurements]))
-                  samples[sample].create_dataset('data/'+str(cycle)+'/ImZ',data=np.asarray(ImZ[cycle_measurements]))
-                  samples[sample].create_dataset('data/'+str(cycle)+'/ReZ',data=np.asarray(ReZ[cycle_measurements]))
-                  samples[sample].create_dataset('data/'+str(cycle)+'/freq',data=np.asarray(freq[cycle_measurements]))
+                  data_group.create_dataset(str(cycle)+'/Ewe',data=np.asarray(Ewe[cycle_measurements]))
+                  data_group.create_dataset(str(cycle)+'/I',data=np.asarray(I[cycle_measurements]))
+                  data_group.create_dataset(str(cycle)+'/ImZ',data=np.asarray(ImZ[cycle_measurements]))
+                  data_group.create_dataset(str(cycle)+'/ReZ',data=np.asarray(ReZ[cycle_measurements]))
+                  data_group.create_dataset(str(cycle)+'/freq',data=np.asarray(freq[cycle_measurements]))
 #+end_src
 
 #+RESULTS:
