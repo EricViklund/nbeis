@@ -158,7 +158,47 @@ Four samples were measured using the EIS method. To examine the effect of nitrog
 #+end_src
 
 #+RESULTS:
-[[file:./.ob-jupyter/f8d8a71c3da0461e22edff904323444b338efcbc.png]]
+:RESULTS:
+# [goto error]
+#+begin_example
+  [0;31m---------------------------------------------------------------------------[0m
+  [0;31mOSError[0m                                   Traceback (most recent call last)
+  Cell [0;32mIn[3], line 7[0m
+  [1;32m      3[0m [38;5;28;01mimport[39;00m [38;5;21;01mmatplotlib[39;00m[38;5;21;01m.[39;00m[38;5;21;01mpyplot[39;00m [38;5;28;01mas[39;00m [38;5;21;01mplt[39;00m
+  [1;32m      5[0m mm [38;5;241m=[39m [38;5;241m0.03937[39m
+  [0;32m----> 7[0m data [38;5;241m=[39m h5py[38;5;241m.[39mFile([38;5;124m'[39m[38;5;124m./Data/data.hdf5[39m[38;5;124m'[39m)
+  [1;32m      9[0m samples [38;5;241m=[39m data[[38;5;124m'[39m[38;5;124msamples[39m[38;5;124m'[39m]
+  [1;32m     11[0m sample_serial_numbers [38;5;241m=[39m samples[38;5;241m.[39mkeys()
+
+  File [0;32m~/miniconda3/envs/sense/lib/python3.11/site-packages/h5py/_hl/files.py:533[0m, in [0;36mFile.__init__[0;34m(self, name, mode, driver, libver, userblock_size, swmr, rdcc_nslots, rdcc_nbytes, rdcc_w0, track_order, fs_strategy, fs_persist, fs_threshold, fs_page_size, page_buf_size, min_meta_keep, min_raw_keep, locking, alignment_threshold, alignment_interval, **kwds)[0m
+  [1;32m    525[0m     fapl [38;5;241m=[39m make_fapl(driver, libver, rdcc_nslots, rdcc_nbytes, rdcc_w0,
+  [1;32m    526[0m                      locking, page_buf_size, min_meta_keep, min_raw_keep,
+  [1;32m    527[0m                      alignment_threshold[38;5;241m=[39malignment_threshold,
+  [1;32m    528[0m                      alignment_interval[38;5;241m=[39malignment_interval,
+  [1;32m    529[0m                      [38;5;241m*[39m[38;5;241m*[39mkwds)
+  [1;32m    530[0m     fcpl [38;5;241m=[39m make_fcpl(track_order[38;5;241m=[39mtrack_order, fs_strategy[38;5;241m=[39mfs_strategy,
+  [1;32m    531[0m                      fs_persist[38;5;241m=[39mfs_persist, fs_threshold[38;5;241m=[39mfs_threshold,
+  [1;32m    532[0m                      fs_page_size[38;5;241m=[39mfs_page_size)
+  [0;32m--> 533[0m     fid [38;5;241m=[39m make_fid(name, mode, userblock_size, fapl, fcpl, swmr[38;5;241m=[39mswmr)
+  [1;32m    535[0m [38;5;28;01mif[39;00m [38;5;28misinstance[39m(libver, [38;5;28mtuple[39m):
+  [1;32m    536[0m     [38;5;28mself[39m[38;5;241m.[39m_libver [38;5;241m=[39m libver
+
+  File [0;32m~/miniconda3/envs/sense/lib/python3.11/site-packages/h5py/_hl/files.py:226[0m, in [0;36mmake_fid[0;34m(name, mode, userblock_size, fapl, fcpl, swmr)[0m
+  [1;32m    224[0m     [38;5;28;01mif[39;00m swmr [38;5;129;01mand[39;00m swmr_support:
+  [1;32m    225[0m         flags [38;5;241m|[39m[38;5;241m=[39m h5f[38;5;241m.[39mACC_SWMR_READ
+  [0;32m--> 226[0m     fid [38;5;241m=[39m h5f[38;5;241m.[39mopen(name, flags, fapl[38;5;241m=[39mfapl)
+  [1;32m    227[0m [38;5;28;01melif[39;00m mode [38;5;241m==[39m [38;5;124m'[39m[38;5;124mr+[39m[38;5;124m'[39m:
+  [1;32m    228[0m     fid [38;5;241m=[39m h5f[38;5;241m.[39mopen(name, h5f[38;5;241m.[39mACC_RDWR, fapl[38;5;241m=[39mfapl)
+
+  File [0;32mh5py/_objects.pyx:54[0m, in [0;36mh5py._objects.with_phil.wrapper[0;34m()[0m
+
+  File [0;32mh5py/_objects.pyx:55[0m, in [0;36mh5py._objects.with_phil.wrapper[0;34m()[0m
+
+  File [0;32mh5py/h5f.pyx:106[0m, in [0;36mh5py.h5f.open[0;34m()[0m
+
+  [0;31mOSError[0m: Unable to open file (bad object header version number)
+#+end_example
+:END:
 
 
 
@@ -296,8 +336,8 @@ The cost function is defined by
     
       Re_cost = 1.0*np.sum(np.abs(Z_exp_re-Z_sim_re))
       Im_cost = 1.0*np.sum(np.abs(Z_exp_im-Z_sim_im))
-      Re_norm_cost = np.abs(np.matmul(x_re,np.matmul(norm_matrix,x_re.T)))/(x_re.shape[0]**2)
-      Im_norm_cost = np.abs(np.matmul(x_im,np.matmul(norm_matrix,x_im.T)))/(x_im.shape[0]**2)
+      Re_norm_cost = np.abs(np.matmul(x_re,np.matmul(norm_matrix,x_re.T)))
+      Im_norm_cost = np.abs(np.matmul(x_im,np.matmul(norm_matrix,x_im.T)))
     
       cost = Re_cost + Im_cost + Re_norm_cost + Im_norm_cost
 
@@ -379,7 +419,7 @@ The minimization algorithm is applied to each of the EIS spectrum.
   sample_serial_numbers = samples.keys()
 
   #Generate regularization hyper-parameter array
-  reg_params = np.array((1e-3,2e-2,6e-2))
+  reg_params = np.array((1e-3,2e-4,6e-5))
 
   for row, sample_serial_number in enumerate(sample_serial_numbers):
       sample_data = samples[sample_serial_number+'/data']
@@ -389,7 +429,7 @@ The minimization algorithm is applied to each of the EIS spectrum.
       for cycle in sample_data.keys():
           cycle_data = sample_data[cycle]
 
-          Freq = np.array(cycle_data['freq'])
+          Freq = np.array(cycle_data['freq'])*2*np.pi
           ReZ = np.array(cycle_data['ReZ'])
           ImZ = np.array(cycle_data['ImZ'])
 
@@ -398,7 +438,7 @@ The minimization algorithm is applied to each of the EIS spectrum.
           #PARAMS
           f_min = np.min(Freq)
           f_max = np.max(Freq)
-          fitting_params_per_decade = 8
+          fitting_params_per_decade = 6
 
           #Convert to log frequency
           log_f_min = np.log(1e0)
@@ -431,132 +471,142 @@ The minimization algorithm is applied to each of the EIS spectrum.
 
           print("Cycle: "+cycle+" Elapsed time: {:.2f} seconds".format(elapsed_time))
 
+          if 'R' in cycle_data.keys():
+              del cycle_data['R']
 
-          del cycle_data['R']
           cycle_data.create_dataset('R',data=R)
-          del cycle_data['L']
+
+          if 'L' in cycle_data.keys():
+              del cycle_data['L']
+
           cycle_data.create_dataset('L',data=L)
-          del cycle_data['x_re']
+
+          if 'x_re' in cycle_data.keys():
+              del cycle_data['x_re']
+
           cycle_data.create_dataset('x_re',data=x_re)
-          del cycle_data['x_im']
+
+          if 'x_im' in cycle_data.keys():
+              del cycle_data['x_im']
+
           cycle_data.create_dataset('x_im',data=x_im)
 
 #+end_src
 
 #+RESULTS:
 #+begin_example
-  Cycle: 1 Elapsed time: 3.05 seconds
-  Cycle: 2 Elapsed time: 2.59 seconds
-  Cycle: 3 Elapsed time: 2.67 seconds
-  Cycle: 4 Elapsed time: 3.33 seconds
-  Cycle: 5 Elapsed time: 2.69 seconds
-  Cycle: 6 Elapsed time: 2.96 seconds
-  Cycle: 7 Elapsed time: 1.28 seconds
-  Cycle: 8 Elapsed time: 3.70 seconds
-  Cycle: 9 Elapsed time: 3.14 seconds
-  Cycle: 10 Elapsed time: 1.63 seconds
-  Cycle: 11 Elapsed time: 3.70 seconds
-  Cycle: 12 Elapsed time: 5.60 seconds
-  Cycle: 13 Elapsed time: 2.84 seconds
-  Cycle: 14 Elapsed time: 4.82 seconds
-  Cycle: 15 Elapsed time: 2.15 seconds
-  Cycle: 16 Elapsed time: 2.61 seconds
-  Cycle: 17 Elapsed time: 3.11 seconds
-  Cycle: 18 Elapsed time: 2.43 seconds
-  Cycle: 19 Elapsed time: 3.80 seconds
-  Cycle: 20 Elapsed time: 3.11 seconds
-  Cycle: 21 Elapsed time: 4.04 seconds
-  Cycle: 22 Elapsed time: 2.55 seconds
-  Cycle: 23 Elapsed time: 2.83 seconds
-  Cycle: 24 Elapsed time: 1.41 seconds
-  Cycle: 25 Elapsed time: 2.81 seconds
-  Cycle: 26 Elapsed time: 4.72 seconds
-  Cycle: 27 Elapsed time: 4.57 seconds
-  Cycle: 28 Elapsed time: 3.94 seconds
-  Cycle: 1 Elapsed time: 4.17 seconds
-  Cycle: 2 Elapsed time: 1.71 seconds
-  Cycle: 3 Elapsed time: 1.71 seconds
-  Cycle: 4 Elapsed time: 2.42 seconds
-  Cycle: 5 Elapsed time: 1.39 seconds
-  Cycle: 6 Elapsed time: 2.08 seconds
-  Cycle: 7 Elapsed time: 1.41 seconds
-  Cycle: 8 Elapsed time: 3.20 seconds
-  Cycle: 9 Elapsed time: 2.40 seconds
-  Cycle: 10 Elapsed time: 2.20 seconds
-  Cycle: 11 Elapsed time: 2.69 seconds
-  Cycle: 12 Elapsed time: 2.05 seconds
-  Cycle: 13 Elapsed time: 4.20 seconds
-  Cycle: 14 Elapsed time: 2.01 seconds
-  Cycle: 15 Elapsed time: 4.01 seconds
-  Cycle: 16 Elapsed time: 3.40 seconds
-  Cycle: 17 Elapsed time: 2.75 seconds
-  Cycle: 18 Elapsed time: 6.53 seconds
-  Cycle: 19 Elapsed time: 2.74 seconds
-  Cycle: 20 Elapsed time: 3.55 seconds
-  Cycle: 21 Elapsed time: 2.67 seconds
-  Cycle: 22 Elapsed time: 1.95 seconds
-  Cycle: 23 Elapsed time: 4.57 seconds
-  Cycle: 24 Elapsed time: 2.12 seconds
-  Cycle: 25 Elapsed time: 1.94 seconds
-  Cycle: 26 Elapsed time: 4.64 seconds
-  Cycle: 27 Elapsed time: 6.42 seconds
-  Cycle: 28 Elapsed time: 4.38 seconds
-  Cycle: 1 Elapsed time: 3.33 seconds
-  Cycle: 2 Elapsed time: 1.65 seconds
-  Cycle: 3 Elapsed time: 2.52 seconds
-  Cycle: 4 Elapsed time: 2.71 seconds
-  Cycle: 5 Elapsed time: 2.17 seconds
-  Cycle: 6 Elapsed time: 2.42 seconds
-  Cycle: 7 Elapsed time: 3.04 seconds
-  Cycle: 8 Elapsed time: 2.75 seconds
-  Cycle: 9 Elapsed time: 1.58 seconds
-  Cycle: 10 Elapsed time: 3.99 seconds
-  Cycle: 11 Elapsed time: 2.48 seconds
-  Cycle: 12 Elapsed time: 1.65 seconds
-  Cycle: 13 Elapsed time: 2.16 seconds
-  Cycle: 14 Elapsed time: 2.81 seconds
-  Cycle: 15 Elapsed time: 6.02 seconds
-  Cycle: 16 Elapsed time: 3.19 seconds
-  Cycle: 17 Elapsed time: 3.23 seconds
-  Cycle: 18 Elapsed time: 3.27 seconds
-  Cycle: 19 Elapsed time: 4.62 seconds
-  Cycle: 20 Elapsed time: 2.77 seconds
-  Cycle: 21 Elapsed time: 3.02 seconds
-  Cycle: 22 Elapsed time: 3.11 seconds
-  Cycle: 23 Elapsed time: 2.69 seconds
-  Cycle: 24 Elapsed time: 4.88 seconds
-  Cycle: 25 Elapsed time: 4.89 seconds
-  Cycle: 26 Elapsed time: 4.09 seconds
-  Cycle: 27 Elapsed time: 2.35 seconds
+  Cycle: 1 Elapsed time: 1.96 seconds
+  Cycle: 2 Elapsed time: 3.42 seconds
+  Cycle: 3 Elapsed time: 1.64 seconds
+  Cycle: 4 Elapsed time: 2.96 seconds
+  Cycle: 5 Elapsed time: 2.99 seconds
+  Cycle: 6 Elapsed time: 1.69 seconds
+  Cycle: 7 Elapsed time: 1.57 seconds
+  Cycle: 8 Elapsed time: 1.87 seconds
+  Cycle: 9 Elapsed time: 3.60 seconds
+  Cycle: 10 Elapsed time: 2.41 seconds
+  Cycle: 11 Elapsed time: 4.35 seconds
+  Cycle: 12 Elapsed time: 3.16 seconds
+  Cycle: 13 Elapsed time: 5.19 seconds
+  Cycle: 14 Elapsed time: 2.49 seconds
+  Cycle: 15 Elapsed time: 2.60 seconds
+  Cycle: 16 Elapsed time: 3.52 seconds
+  Cycle: 17 Elapsed time: 4.39 seconds
+  Cycle: 18 Elapsed time: 4.65 seconds
+  Cycle: 19 Elapsed time: 2.22 seconds
+  Cycle: 20 Elapsed time: 3.32 seconds
+  Cycle: 21 Elapsed time: 2.72 seconds
+  Cycle: 22 Elapsed time: 2.15 seconds
+  Cycle: 23 Elapsed time: 1.89 seconds
+  Cycle: 24 Elapsed time: 3.38 seconds
+  Cycle: 25 Elapsed time: 2.32 seconds
+  Cycle: 26 Elapsed time: 2.79 seconds
+  Cycle: 27 Elapsed time: 3.13 seconds
+  Cycle: 28 Elapsed time: 2.78 seconds
+  Cycle: 1 Elapsed time: 2.65 seconds
+  Cycle: 2 Elapsed time: 2.52 seconds
+  Cycle: 3 Elapsed time: 1.87 seconds
+  Cycle: 4 Elapsed time: 2.58 seconds
+  Cycle: 5 Elapsed time: 1.92 seconds
+  Cycle: 6 Elapsed time: 1.92 seconds
+  Cycle: 7 Elapsed time: 2.64 seconds
+  Cycle: 8 Elapsed time: 2.74 seconds
+  Cycle: 9 Elapsed time: 3.46 seconds
+  Cycle: 10 Elapsed time: 3.30 seconds
+  Cycle: 11 Elapsed time: 2.39 seconds
+  Cycle: 12 Elapsed time: 1.27 seconds
+  Cycle: 13 Elapsed time: 1.52 seconds
+  Cycle: 14 Elapsed time: 3.08 seconds
+  Cycle: 15 Elapsed time: 3.53 seconds
+  Cycle: 16 Elapsed time: 1.39 seconds
+  Cycle: 17 Elapsed time: 3.03 seconds
+  Cycle: 18 Elapsed time: 2.97 seconds
+  Cycle: 19 Elapsed time: 1.96 seconds
+  Cycle: 20 Elapsed time: 2.79 seconds
+  Cycle: 21 Elapsed time: 3.64 seconds
+  Cycle: 22 Elapsed time: 2.75 seconds
+  Cycle: 23 Elapsed time: 1.67 seconds
+  Cycle: 24 Elapsed time: 4.29 seconds
+  Cycle: 25 Elapsed time: 2.46 seconds
+  Cycle: 26 Elapsed time: 3.20 seconds
+  Cycle: 27 Elapsed time: 2.60 seconds
+  Cycle: 28 Elapsed time: 4.87 seconds
+  Cycle: 1 Elapsed time: 1.88 seconds
+  Cycle: 2 Elapsed time: 3.04 seconds
+  Cycle: 3 Elapsed time: 2.30 seconds
+  Cycle: 4 Elapsed time: 3.31 seconds
+  Cycle: 5 Elapsed time: 4.16 seconds
+  Cycle: 6 Elapsed time: 4.60 seconds
+  Cycle: 7 Elapsed time: 4.22 seconds
+  Cycle: 8 Elapsed time: 3.52 seconds
+  Cycle: 9 Elapsed time: 2.96 seconds
+  Cycle: 10 Elapsed time: 1.27 seconds
+  Cycle: 11 Elapsed time: 3.05 seconds
+  Cycle: 12 Elapsed time: 2.21 seconds
+  Cycle: 13 Elapsed time: 2.75 seconds
+  Cycle: 14 Elapsed time: 2.67 seconds
+  Cycle: 15 Elapsed time: 3.06 seconds
+  Cycle: 16 Elapsed time: 5.28 seconds
+  Cycle: 17 Elapsed time: 0.98 seconds
+  Cycle: 18 Elapsed time: 1.86 seconds
+  Cycle: 19 Elapsed time: 2.52 seconds
+  Cycle: 20 Elapsed time: 1.98 seconds
+  Cycle: 21 Elapsed time: 2.32 seconds
+  Cycle: 22 Elapsed time: 1.21 seconds
+  Cycle: 23 Elapsed time: 1.70 seconds
+  Cycle: 24 Elapsed time: 4.56 seconds
+  Cycle: 25 Elapsed time: 4.26 seconds
+  Cycle: 26 Elapsed time: 3.18 seconds
+  Cycle: 27 Elapsed time: 2.27 seconds
+  Cycle: 28 Elapsed time: 2.21 seconds
+  Cycle: 1 Elapsed time: 1.97 seconds
+  Cycle: 2 Elapsed time: 1.50 seconds
+  Cycle: 3 Elapsed time: 2.20 seconds
+  Cycle: 4 Elapsed time: 0.36 seconds
+  Cycle: 5 Elapsed time: 0.37 seconds
+  Cycle: 6 Elapsed time: 0.41 seconds
+  Cycle: 7 Elapsed time: 0.88 seconds
+  Cycle: 8 Elapsed time: 2.68 seconds
+  Cycle: 9 Elapsed time: 3.44 seconds
+  Cycle: 10 Elapsed time: 1.96 seconds
+  Cycle: 11 Elapsed time: 3.39 seconds
+  Cycle: 12 Elapsed time: 3.10 seconds
+  Cycle: 13 Elapsed time: 2.52 seconds
+  Cycle: 14 Elapsed time: 2.79 seconds
+  Cycle: 15 Elapsed time: 2.48 seconds
+  Cycle: 16 Elapsed time: 1.69 seconds
+  Cycle: 17 Elapsed time: 2.43 seconds
+  Cycle: 18 Elapsed time: 2.28 seconds
+  Cycle: 19 Elapsed time: 4.00 seconds
+  Cycle: 20 Elapsed time: 1.98 seconds
+  Cycle: 21 Elapsed time: 2.00 seconds
+  Cycle: 22 Elapsed time: 2.71 seconds
+  Cycle: 23 Elapsed time: 2.75 seconds
+  Cycle: 24 Elapsed time: 2.50 seconds
+  Cycle: 25 Elapsed time: 2.69 seconds
+  Cycle: 26 Elapsed time: 3.23 seconds
+  Cycle: 27 Elapsed time: 3.13 seconds
   Cycle: 28 Elapsed time: 4.42 seconds
-  Cycle: 1 Elapsed time: 1.94 seconds
-  Cycle: 2 Elapsed time: 3.23 seconds
-  Cycle: 3 Elapsed time: 3.24 seconds
-  Cycle: 4 Elapsed time: 0.81 seconds
-  Cycle: 5 Elapsed time: 0.76 seconds
-  Cycle: 6 Elapsed time: 2.82 seconds
-  Cycle: 7 Elapsed time: 0.66 seconds
-  Cycle: 8 Elapsed time: 2.26 seconds
-  Cycle: 9 Elapsed time: 2.27 seconds
-  Cycle: 10 Elapsed time: 3.98 seconds
-  Cycle: 11 Elapsed time: 3.30 seconds
-  Cycle: 12 Elapsed time: 6.38 seconds
-  Cycle: 13 Elapsed time: 3.13 seconds
-  Cycle: 14 Elapsed time: 3.19 seconds
-  Cycle: 15 Elapsed time: 2.56 seconds
-  Cycle: 16 Elapsed time: 6.46 seconds
-  Cycle: 17 Elapsed time: 3.50 seconds
-  Cycle: 18 Elapsed time: 5.42 seconds
-  Cycle: 19 Elapsed time: 3.36 seconds
-  Cycle: 20 Elapsed time: 3.68 seconds
-  Cycle: 21 Elapsed time: 5.25 seconds
-  Cycle: 22 Elapsed time: 4.86 seconds
-  Cycle: 23 Elapsed time: 4.17 seconds
-  Cycle: 24 Elapsed time: 1.85 seconds
-  Cycle: 25 Elapsed time: 1.77 seconds
-  Cycle: 26 Elapsed time: 2.28 seconds
-  Cycle: 27 Elapsed time: 3.70 seconds
-  Cycle: 28 Elapsed time: 2.45 seconds
 #+end_example
 
 
@@ -643,24 +693,25 @@ The minimization algorithm is applied to each of the EIS spectrum.
       X,Y = np.meshgrid(plot_freq,Electrode_Potential,indexing='ij')
 
       mesh = ax2.pcolormesh(X,Y,gamma,shading='nearest', cmap='viridis')
-      mesh.set_norm(SymLogNorm(linthresh=1e0,vmin=-5e-1,vmax=5e-1))
+      #mesh.set_norm(SymLogNorm(linthresh=1e-2))
       cbar = fig.colorbar(mesh)
 
       ax2.set_xscale('symlog')
       ax2.set_xlabel('Frequency [rad/s]')
       ax2.set_xticks([-1e5,-1e3,-1e1,0,1e1,1e3,1e5])
-      ax2.set_ylim(0,5)
+      ax2.set_ylim(0.5,1.0)
 
-      ax1.plot(Current/1000,Electrode_Potential)
-      ax1.fill_betweenx(Electrode_Potential, Current_min/1000, Current_max/1000, alpha = 0.2)
+      ax1.plot(Current,Electrode_Potential)
+      ax1.fill_betweenx(Electrode_Potential, Current_min, Current_max, alpha = 0.2)
       ax1.set_ylabel('Polishing Voltage [V]')
-      ax1.set_xlabel('Current [A]')
+      ax1.set_xlabel('Current [mA]')
       ax1.invert_xaxis()
       # ax1.set_xticks([0.1,0.2])
-      ax1.set_yticks(np.arange(0,6,1))
+      ax1.set_yticks(np.arange(0,5,1))
       # ax1.set_xlim(0.2,0)
 
       fig.subplots_adjust(wspace = 0)
+      #ax2.set_title(sample_serial_number)
 
 
 
@@ -669,13 +720,11 @@ The minimization algorithm is applied to each of the EIS spectrum.
 
 #+RESULTS:
 :RESULTS:
-: /tmp/ipykernel_2456/1520470813.py:82: UserWarning: All values for SymLogScale are below linthresh, making it effectively linear. You likely should lower the value of linthresh. 
-:   cbar = fig.colorbar(mesh)
 : <Figure size 700x1200 with 0 Axes>
-[[file:./.ob-jupyter/9000848975e1fcf282c0de93e9243036cd4c6b9d.png]]
-[[file:./.ob-jupyter/9301ddd1fc557957574ac5a44f21ce228241de13.png]]
-[[file:./.ob-jupyter/b734ca150758588d1254d755a766dd71e1881d9f.png]]
-[[file:./.ob-jupyter/e6b5c95e1f14aef3fee493d30c4c7391ba832bda.png]]
+[[file:./.ob-jupyter/2c80127a9687758b9755865302384e9af9d88961.png]]
+[[file:./.ob-jupyter/80645c750d2a3c78c6631805ccf16c64b8073166.png]]
+[[file:./.ob-jupyter/e8682fdde1a460bb653ff6ec8cb050ac7a9a9d43.png]]
+[[file:./.ob-jupyter/20b6c4446763351b025385666a3eaa8eac530eb9.png]]
 :END:
 
 
