@@ -1,0 +1,174 @@
+\documentclass[reprint,amsmath,amssymb,aps]{revtex4-2}%
+\usepackage{unicode-math}
+\usepackage{lmodern}%
+\usepackage{textcomp}%
+\usepackage{lastpage}%
+\usepackage{graphicx}%
+\usepackage{siunitx}%
+%
+%
+\begin{document}%
+\normalsize%
+\title{Electrochemical Surface State Sensing Using Electrochemical Impedance Spectroscopy}%
+\author{Eric Viklund}%
+\affiliation{Department of Materials Science and Engineering, Northwestern University}%
+\affiliation{Fermi National Accelerator Laboratory}%
+\author{David N. Seidman}%
+\affiliation{Department of Materials Science and Engineering, Northwestern University}%
+\author{Sam Posen}%
+\affiliation{Fermi National Accelerator Laboratory}%
+\date{\today}%
+
+\begin{abstract}%
+    Using electrochemical impedance spectroscopy (EIS), we have devised a method of sensing the microscopic surface conditions on the surface of niobium as it is undergoing an electrochemical polishing (EP) treatment. The method uses EIS to gather information on the surface state of the electrode without disrupting the polishing reaction. The EIS data is analyzed using a so-called distribution of relaxation times (DRT) method. Using DRT, the EIS data can be deconvolved into discrete relaxation time peaks without any apriori knowledge of the electrode dynamics. By analyzing the relaxation time peaks, we are able to distinguish two distinct modes of the EP reaction. As the polishing voltage is increased, the electrode transitions from the low voltage EP mode, characterized by two relaxation time peaks, to the high voltage EP mode, characterized by three relaxation time peaks. By analyzing EPed samples, we show that samples polished in the low voltage mode have significantly higher surface roughness due to grain etching and faceting. Samples polished in the high voltage mode obtain a smooth surface finish. This shows that EIS combined with DRT analysis can be use to predict etching on EPed Nb. This method can also be performed before or during the EP, which could allow for adjustment of polishing parameters to guarantee a smooth cavity surface finish.
+\end{abstract}%
+
+\maketitle%
+
+\section{Indroduction}\label{sec:introduction}
+    Electropolishing (EP) is commonly used to polish Nb SRF cavities to nanometer scale surface roughness. 
+
+    EIS has been used to study the chemistry of niobium in HF electrolytes before\ref{tian_2008,ranjith2018anodic,cattarin2002nb}. However, these studies have only analyzed the spectrum using qualitative methods or traditional equivalent circuit fitting techniques. These methods have proven insufficient for explaining several important phenomenon of EP such as surface etching and spontaneous current oscillations.
+
+    In this study, we use a model-free method of analyzing the EIS spectrum called distribution of relaxation times (DRT) analysis. The advantage of this method is that the EIS spectrum can be easily characterized over a large range of polishing conditions without making any assumptions about the underlying chemical processes. 
+
+    Using this method, we are able to observe the formation of the Nb_{2}O_{5} layer as the polishing voltage is increased. We also show that the formation of the oxide corresponds with a reduction in surface etching by analyzing Nb samples using SEM and confocal laser microscopy.
+
+\section{Theory}\label{sec:theory}
+    An alternating voltage is applied to the niobium electrode of the form:
+
+    \begin{equation}
+    E=E_{0}+E_{AC}\sin(\omega*t)
+    \end{equation}
+
+    For small amplitudes of E_{ac}  and assuming the system is operating at a steady-state, the electrode response to the alternating voltage can be described by a linear time-invariant system (LTI). Thus the form of the current must be:
+
+    \begin{equation}
+    I=I_{0}+I_{AC}\cos(\omega*t+\phi)
+    \end{equation}
+
+    The complex impedance of the electrode is determined by the phase difference, \phi, and the ratio of the magnitudes of the AC component of the current and voltage:
+
+    \begin{flalign}
+    & Z=\frac{I_{AC}}{E_{AC}}*e^{j\phi}\\
+    & or\notag\\
+    & Z=Z'+jZ''
+    \end{flalign}
+
+    Here we use 'j' as the imaginary unit. Z' and Z'' are the real and imaginary components of Z.
+
+
+
+    The impedance spectrum of the niobium was deconvolved using the distribution of relaxation times (DRT) method. We consider the electrode as a collection of infinitesimal discrete circuit elements. This is motivated by the fact that the electrode and its surrounding environment is a 3-dimensional object where each point on the elctrode acts independantly from every other part of the elctrode. This is in contrast with the classical view of electrochemical systems that treat the electrodes as homogeneous objects described by a set of discrete curcuit elements.
+
+    The fundamental elctrochemical circuit element is the RC circuit, a resistor and a capacitor in parallel, and can be described by it's time constant, \tau=RC. Taking an infinite number of RC circuits in series we obtain what is known as a Voigt circuit. The impedance of an RC circuit and of an infinite Voight circuit is given by the equations:
+
+    \begin{flalign}
+    Z_{RC}&=\frac{R}{1+j\omega\tau}\\
+    Z_{Voigt} &= R + j \omega L + \int_{0}^{\infty} \frac{G(\tau) d \tau}{1 + j \omega \tau}
+    \end{flalign}
+
+    The function G (\tau) is the distribution of relaxation times of the measured system.
+
+    It is more convenient to rewrite the integral in a log scale, since EIS measurements are typically performed over multiple orders of magnitude.
+
+    \begin{flalign}
+    Z=&R+j\omega L+\int_{-\infty}^{\infty}\frac{\gamma(ln\tau)dln\tau}{1+j\omega \tau}
+    \end{flalign}
+
+    To solve for the function \gamma(ln\tau) numerically, we discretize the problem by introducing a test function.
+
+    \begin{flalign}
+    \gamma(ln\tau)&\approx\sum_{n=0}^{N}x_{n}\phi_{n}(ln\tau)\\
+    Z&\approx R+j\omega L+\sum_{n=0}^{N}x_{n}\int_{-\infty}^{\infty}\frac{\phi_{n}(ln\tau)dln\tau}{1+j\omega\tau}
+    \end{flalign}
+
+    or in matrix form:
+
+    \begin{flalign}
+    Z=& R\mathbf{1}+\mathbf{A'x}+j(\omega L\mathbf{1}+\mathbf{A''x}) \label{eq:Zmatrix}\\
+    \mathbf{x}=&[x_0,x_1,\ldots,x_N]^T\\
+    \mathbf{A'}=&\int_{-\infty}^{\infty}\frac{\phi_{n}(ln\tau)dln\tau}{1+\omega^2\tau^2}\label{eq:A'}\\
+    \mathbf{A''}=&\int_{-\infty}^{\infty}\frac{-\omega\tau\phi_{n}(ln\tau)dln\tau}{1+\omega^2\tau^2}\label{eq:A''}
+    \end{flalign}
+
+    to solve for \mathbf{x} we fit equation~\ref{eq:matrix} to the experimental impedance measurements by minimizing the square difference. The matrix \mathbf{M} is a normalization term to prevent overfitting.
+
+    \begin{flalign}
+    \min_{\mathbf{x},R,L}[||Z'_{exp}-(R\mathbf{1}+\mathbf{A'x})||^2+||Z''_{exp}-(\omega L\mathbf{1}+\mathbf{A''x})||^2+|\mathbf{xMx}^{T}|]
+    \end{flalign}
+
+    \mathbf{M} is calculated by integrating the function G(\tau) and it's derivatives. The derivative of G is equal to the sum of the derivatives of the test functions.
+
+    \begin{flalign}
+    \frac{d^{k}\gamma}{dln\tau^{k}} =& \sum_{n=0}^{N}x_{n}\frac{d^{k}\phi_{n}}{dln\tau^{k}}
+    \end{flalign}
+
+    We want to penalize the magnitudes of the derivatives of \gamma, thus we calculate the square of the derivative and integrate.
+
+    \begin{flalign}
+    (\frac{d^{k}\gamma}{dln\tau^{k}})^{2} =& \sum_{n=0}^{N}x_{n}\frac{d^{k}\phi_{n}}{dln\tau^{k}} \sum_{m=0}^{N}x_{m}\frac{d^{k}\phi_{m}}{dln\tau^{k}}\\
+    \int_{0}^{\infty}(\frac{d^{k}\gamma}{dln\tau^{k}})^{2} dln\tau =& \sum_{n=0}^{N} \sum_{m=0}^{N}x_{n}x_{m} \int_{0}^{\infty} \frac{d^{k}\phi_{n}}{dln\tau^{k}} \frac{d^{k}\phi_{m}}{dln\tau^{k}} dln\tau\\
+    (\mathbf{M}_{k})_{n,m} =& \int_{0}^{\infty} \frac{d^{k}\phi_{n}}{dln\tau^{k}} \frac{d^{k}\phi_{m}}{dln\tau^{k}} dln\tau\\
+    \mathbf{M} =& \sum_{k=0}^{K}\lambda_{k}\mathbf{M}_{k}
+    \end{flalign}
+
+    The optimum values of \lambda_{k} are not trivial to find. Higher values lead to stronger smoothing of \gamma, which could lead to important details being ignored. If \lambda_{k} is too small, the procedure will overfit to any noise in the experimental data.
+
+
+\section{Experimental}\label{sec:experimental}
+    Four samples were measured using the EIS method. To examine the effect of nitrogen doping on the electropolishing reaction, two of the samples were were exposed to nitrogen gas at 800~\unit{\degree\celcius} for two minutes. To test the effect of cold EP, the electrolyte temperature was lowered to 13~\unit{\degree\celsius} during two of the sample measurements.
+
+    : | Serial Number   |   Electrolyte Temperature | Nitrogen Doped   |
+    : |-----------------+---------------------------+------------------|
+    : | S35             |                        21 | No               |
+    : | S68             |                        13 | No               |
+    : | S67             |                        13 | Yes              |
+    : | S75             |                        21 | Yes              |
+
+
+
+\section{Calculations}\label{sec:calculations}
+
+\subsection{Test Function}\label{subsec:test_function}
+
+
+    To discretize the DRT function, we use a set of Gaussian test functions evenly spaced on the log scale.
+
+    \begin{flalign}
+    \phi_{n}(ln\tau) &= x_{n}e^{\frac{ln\tau-ln\tau_{n}}{\mu}}
+    \end{flalign}
+
+    For a series of impedance measurements measured at frequencies (f_{1},f_{2} \ellipses f_{m} \ellipses f_{M}) in a descending frequency order and equally spaced in on the log frequency scale, the centers of the gaussian test functions, ln\tau_{n} are chosen to be 1/f_{m}. We note that this is an arbitrary decission chosen for convenience and the spacing between test functions and the total number of test functions used can take any value. However, changing the spacing to larger or smaller values or adding test functions outside the range of measured frequencies would have no real physical meaning.
+
+    The width, \mu, of the gaussian function is set such that the full width at half maximum (FWHM) is equal to ln\tau_{n+1}-ln\tau_{n-1}. This ensures a good compromise between being able to fit rapidly changing regions of the DRT function and having enough overlapping regions between neighboring test functions.
+
+
+\subsection{Numerical Integration}\label{subsec:numerical_integration}
+
+    To calculate the matrices \mathbf{A'} and \mathbf{A''}, the integral~\ref{eq:A'} and~ \ref{eq:A''} must be integrated numerically. This calculation is performed using the Gaussian quadrature method.
+
+    \begin{flalign}
+    \int_{a}^{b}f(x)dx \approx & \frac{b-a}{2} \sum_{i=1}^{n}w_{i}f(\frac{b-a}{2}\xi_{i}+\frac{b-a}{2})
+    \end{flalign}
+
+    Here \xi are the roots of the n-th Legendre polynomial and w are the weights are calculated from the derivative of the n-th Legendre polynomial using the equation
+
+    \begin{flalign}
+    w_{i} =& -\frac{2}{(1-\xi_{i}^{2})(P'_{n}(\xi_{i}))}
+    \end{flalign}
+
+
+\subsection{Cost Function}\label{subsec:cost_function}
+
+
+\subsection{Minimization Algorithm}\label{subsec:minimization_algorithm}
+
+\section{Results}\label{sec:results}
+
+\section{Discussion}\label{sec:discussion}
+
+\section{Conclusion}\label{sec:conclusion}
+
+
+\end{document}
