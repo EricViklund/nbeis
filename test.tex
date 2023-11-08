@@ -12,19 +12,14 @@
 \usepackage{amsmath}
 \usepackage{textcomp}
 \usepackage{amssymb}
-\usepackage{capt-of}
-\usepackage{hyperref}
+
 \author{Eric Viklund}
 \date{\date}
-\title{Electrochemical Surface State Sensing Using Electrochemical Impedance Spectroscopy}
-\hypersetup{
- pdfauthor={Eric Viklund},
- pdftitle={Electrochemical Surface State Sensing Using Electrochemical Impedance Spectroscopy},
- pdfkeywords={},
- pdfsubject={},
- pdfcreator={Emacs 27.1 (Org mode 9.3)}, 
- pdflang={English}}
+\title{Direct Evidence of Oxide Film Formation in Nb Electropolishing Using Electrochemical Impedance Spectroscopy}
+
+
 \begin{document}
+
 
 \maketitle
 \tableofcontents
@@ -127,60 +122,7 @@ We want to penalize the magnitudes of the derivatives of \(\gamma\), thus we cal
 The optimum values of \(\lambda\)\textsubscript{k} are not trivial to find. Higher values lead to stronger smoothing of \(\gamma\), which could lead to important details being ignored. If \(\lambda\)\textsubscript{k} is too small, the procedure will overfit to any noise in the experimental data.
 
 
-\section{Experimental}
-\label{sec:orgb71f960}
-Four samples were measured using the EIS method. To examine the effect of nitrogen doping on the electropolishing reaction, two of the samples were were exposed to nitrogen gas at 800\textasciitilde{}\unit{\degree\celcius} for two minutes. To test the effect of cold EP, the electrolyte temperature was lowered to 13\textasciitilde{}\unit{\degree\celsius} during two of the sample measurements.
 
-\begin{center}
-\begin{tabular}{llll}
-: & Serial Number & Electrolyte Temperature & Nitrogen Doped\\
-\end{tabular}
-\end{center}
-
-
-\begin{verbatim}
-import numpy as np
-import h5py
-import matplotlib.pyplot as plt
-
-mm = 0.03937
-
-data = h5py.File('./Data/data.hdf5')
-
-samples = data['samples']
-
-sample_serial_numbers = samples.keys()
-
-fig = plt.figure(figsize=(7,12))
-subfigs = fig.subfigures(nrows=4,ncols=1)
-
-for row, sample_serial_number in enumerate(sample_serial_numbers):
-    sample_data = samples[sample_serial_number+'/data']
-
-
-    subfig = subfigs[row]
-    subfig.suptitle('Sample Serial Number: '+sample_serial_number)
-
-    re_ax, im_ax = subfig.subplots(nrows=1, ncols=2)    
-
-    re_ax.set_xscale('log')
-    im_ax.set_xscale('log')
-
-
-    for cycle in sample_data.keys():
-	cycle_data = sample_data[cycle]
-
-	freq = np.array(cycle_data['freq'])
-	ReZ = np.array(cycle_data['ReZ'])
-	ImZ = np.array(cycle_data['ImZ'])
-
-	re_ax.scatter(freq,ReZ+int(cycle),marker='x',s=5)
-	im_ax.scatter(freq,ImZ+int(cycle),marker='x',s=5)
-
-	re_ax.set_ylim(0,40)
-	im_ax.set_ylim(-10,30)
-
-\end{verbatim}
 
 
 
@@ -194,27 +136,13 @@ for row, sample_serial_number in enumerate(sample_serial_numbers):
 To discretize the DRT function, we use a set of Gaussian test functions evenly spaced on the log scale.
 
 \begin{flalign}
-  \phi_{n}(ln\tau) &= x_{n}e^{\frac{ln\tau-ln\tau_{n}}{\mu}}
+  \phi_{n}(ln\omega) &= x_{n}e^{\frac{ln\omega-ln\omega{n}}{\mu}}
 \end{flalign}
 
-For a series of impedance measurements measured at frequencies (f\textsubscript{1},f\textsubscript{2} \ellipses f\textsubscript{m} \ellipses f\textsubscript{M}) in a descending frequency order and equally spaced in on the log frequency scale, the centers of the gaussian test functions, ln\(\tau\)\textsubscript{n} are chosen to be 1/f\textsubscript{m}. We note that this is an arbitrary decission chosen for convenience and the spacing between test functions and the total number of test functions used can take any value. However, changing the spacing to larger or smaller values or adding test functions outside the range of measured frequencies would have no real physical meaning.
+The number of test functions used in the DRT fit was set to 12 functions per decade. The minimum and maximum \omega_n for the test functions was set to a range spanning three magnitudes lower than the minimum measured frequency to the highest measured frequency. 
 
-The width, \(\mu\), of the gaussian function is set such that the full width at half maximum (FWHM) is equal to ln\(\tau\)\textsubscript{n+1}-ln\(\tau\)\textsubscript{n-1}. This ensures a good compromise between being able to fit rapidly changing regions of the DRT function and having enough overlapping regions between neighboring test functions.
+The width, \(\mu\), of the gaussian function is set such that the full width at half maximum (FWHM) is equal to ln\(\omega\)\textsubscript{n+1}-ln\(\omega\)\textsubscript{n-1}.
 
-\begin{verbatim}
-import numpy as np
-from scipy.special import hermite
-
-def Gaussian_Func(x,sigma):
-    y = np.exp(-x**2/(2*sigma**2)) / (2.5066*sigma)
-    return y
-
-def Gaussian_Derivative(x,n,sigma):
-    hermite_poly = hermite(n)
-    y = (-1)**n * Gaussian_Func(x,sigma) * hermite_poly(x/sigma) * (1/sigma)**n
-    return y
-
-\end{verbatim}
 
 \subsection{Numerical Integration of \mathbf{A'} and \mathbf{A''}}
 \label{sec:org84f1f26}
@@ -231,97 +159,15 @@ Here \(\xi\) are the roots of the n-th Legendre polynomial and w are the weights
   w_{i} =& -\frac{2}{(1-\xi_{i}^{2})(P'_{n}(\xi_{i}))}
 \end{flalign}
 
-\begin{verbatim}
-import numpy as np
 
-def quad(f, a, b, n=5):
-    # Generate the quadrature rule coefficients from the numbpy library
-    x, w = np.polynomial.legendre.leggauss(n)
 
-    # Scale the quadrature points and weights to the interval [a, b]
-    x_scaled = 0.5 * (b - a) * x + 0.5 * (b + a)
-    w_scaled = 0.5 * (b - a) * w
-
-    # Evaluate the function at the quadrature points and sum up the weighted contributions
-    integral = np.sum(w_scaled[:,None] * f(x_scaled),axis=0)
-
-    return integral
-
-\end{verbatim}
-
-The integrands of \mathbf{A'}, \mathbf{A''}, and \mathbf{M} are given by the functions
-
-\begin{verbatim}
-def re_integrand(x, fn, fm, gaussian_sigma):
-    x_diff = x[:,None] - fn[None,:] + fm[None,:]
-    return Gaussian_Func(x, gaussian_sigma)[:,None] / (1 + np.exp(-2 * x_diff))
-
-def im_integrand(x, fn, fm, gaussian_sigma):
-    x_diff = x[:,None] - fn[None,:] + fm[None,:]
-    return Gaussian_Func(x, gaussian_sigma)[:,None] * np.exp(-x_diff) / (1 + np.exp(-2 * x_diff))
-
-def norm_integrand(x, fn, fm, k, gaussian_sigma):
-    x_diff = x[:,None] - fn[None,:] + fm[None,:]
-    return Gaussian_Derivative(x_diff,k,gaussian_sigma)*Gaussian_Derivative(x,k,gaussian_sigma)[:,None]
-\end{verbatim}
-
-This funtion performs the integrals on the integrands for each pair of experimental and test frequencies.
-
-\begin{verbatim}
-def integrate_test_functions(log_fm,log_fn,gaussian_sigma):
-
-    #The measured frequencies fm and the test function frequencies fn are combined for each index ij of the matrix A' and A''.
-    fn_mesh, fm_mesh = np.meshgrid(log_fm, log_fn, indexing='ij')
-
-    # reshape fn_mesh and fm_mesh into column vectors
-    fn = fn_mesh.flatten()
-    fm = fm_mesh.flatten()
-
-    #Real integral
-    integral = quad(lambda y: re_integrand(y,fn,fm,gaussian_sigma), -3*gaussian_sigma, 3*gaussian_sigma)
-
-    A_re = integral.reshape(fn_mesh.shape)
-
-    #Imag integral    
-    integral = quad(lambda y: im_integrand(y,fn,fm,gaussian_sigma), -3*gaussian_sigma, 3*gaussian_sigma)
-
-    A_im = integral.reshape(fn_mesh.shape)
-
-    return A_re, A_im
-
-\end{verbatim}
 
 \subsection{Cost Function}
 \label{sec:org4b6f224}
 
-The cost function is defined by
-
-\begin{verbatim}
-def cost_func(x,f_m,A_re,A_im,b,norm_matrix):
-
-    x_re = x[0:A_re.shape[1]]
-    x_im = x[A_re.shape[1]:A_re.shape[1]+A_im.shape[1]]
-    R = x[A_re.shape[1]+A_im.shape[1]]
-    L = x[A_re.shape[1]+A_im.shape[1]+1]
-
-    Z_sim_re = np.matmul(A_re,x_re)+R
-    Z_sim_im = np.matmul(A_im,x_im)+np.exp(f_m)*L
-
-    Z_exp_re = np.real(b)
-    Z_exp_im = np.imag(b)
+The cost function is defined by the square of the difference between the measured and calculated impedance and a normalization term.
 
 
-
-    Re_cost = 1.0*np.sum(np.abs(Z_exp_re-Z_sim_re))
-    Im_cost = 1.0*np.sum(np.abs(Z_exp_im-Z_sim_im))
-    Re_norm_cost = np.abs(np.matmul(x_re,np.matmul(norm_matrix,x_re.T)))
-    Im_norm_cost = np.abs(np.matmul(x_im,np.matmul(norm_matrix,x_im.T)))
-
-    cost = Re_cost + Im_cost + Re_norm_cost + Im_norm_cost
-
-    return cost
-
-\end{verbatim}
 
 
 
@@ -331,364 +177,55 @@ def cost_func(x,f_m,A_re,A_im,b,norm_matrix):
 
 
 
-\begin{verbatim}
-from scipy.optimize import minimize
-def DRT_Fit(measured_frequencies, measured_Z, fitting_frequencies, reg_params):
-
-    f_m = measured_frequencies
-    f_n = fitting_frequencies
-    Z_m = measured_Z
-
-    reg_order = reg_params.shape[0]
-    gaussian_width = (np.max(fitting_frequencies)-np.min(fitting_frequencies))/fitting_frequencies.shape[0]
+\section{Experimental}
+\label{sec:orgb71f960}
 
 
 
-    #Generate parameter array
-    #real, imag, resistance
-    x_params = np.zeros((2*fitting_frequencies.shape[0]+2))
+A strip of Nb foil was prepared by cleaning with alcohol. A Nb wire was used as a pseudo-electrode, since it is resistant to the EP electrolyte. The counter electrode is an aluminum rod.
 
-    #Integrate the test functions wrt the measured frequencies
-    A_re, A_im = integrate_test_functions(measured_frequencies, fitting_frequencies, gaussian_width/2.355)
+The EIS measurements were performed using a BioLogic VSP-300 potentiostat.
 
-    #Calculate the regularization matrix
-    fn_mesh, fm_mesh = np.meshgrid(f_n, f_n, indexing='ij')
-
-    fn = fn_mesh.flatten()
-    fm = fm_mesh.flatten()
-
-    M = np.zeros((fitting_frequencies.shape[0],fitting_frequencies.shape[0]))
-    for k in range(reg_order):
-	integral = quad(lambda y: norm_integrand(y,fn,fm,k,gaussian_width/2.355), -3*gaussian_width/2.355, 3*gaussian_width/2.355)
-	M += reg_params[k]*integral.reshape(fn_mesh.shape).T
-
-
-    #Fit to experimental data
-    b = Z_m
-
-    #Solve for parameters
-    res = minimize(cost_func,x_params,args=(f_m,A_re,A_im,b,M))
-    x_params = res['x']
-
-    #Calculate the gamma function coefficients
-    x_re = x_params[:fitting_frequencies.shape[0]]
-    x_im = x_params[fitting_frequencies.shape[0]:-2]
-    R = x_params[-2]
-    L = x_params[-1]
-
-    return x_re, x_im, R, L
-\end{verbatim}
-
-The minimization algorithm is applied to each of the EIS spectrum.
-
-\begin{verbatim}
-import numpy as np
-import h5py
-import time
-
-
-data = h5py.File('./Data/data.hdf5')
-
-samples = data['samples']
-
-sample_serial_numbers = samples.keys()
-
-#Generate regularization hyper-parameter array
-reg_params = np.array((1e-3,2e-4,6e-5))
-
-for row, sample_serial_number in enumerate(sample_serial_numbers):
-    sample_data = samples[sample_serial_number+'/data']
-
-    potential_steps = len(sample_data.keys())
-
-    for cycle in sample_data.keys():
-	cycle_data = sample_data[cycle]
-
-	Freq = np.array(cycle_data['freq'])*2*np.pi
-	ReZ = np.array(cycle_data['ReZ'])
-	ImZ = np.array(cycle_data['ImZ'])
-
-	Z = ReZ + 1j*ImZ
-
-	#PARAMS
-	f_min = np.min(Freq)
-	f_max = np.max(Freq)
-	fitting_params_per_decade = 6
-
-	#Convert to log frequency
-	log_f_min = np.log(1e0)
-	log_f_max = np.log(1e6)
-
-	#Generate the fitting test function offsets
-	number_of_fitting_params = int(fitting_params_per_decade*(log_f_max-log_f_min))
-	log_f_n = np.linspace(log_f_min,log_f_max,number_of_fitting_params)
-	gaussian_width = (np.max(log_f_n)-np.min(log_f_n))/log_f_n.shape[0]
-
-	#Convert experimental frequencies to log space
-	log_Freq = np.log(Freq)
-
-	x_re = np.zeros((number_of_fitting_params))
-	x_im = np.zeros((number_of_fitting_params))
-	R = 0
-	L = 0
-
-	# start the timer
-	start_time = time.time()
-
-	x_re, x_im, R, L = DRT_Fit(log_Freq, Z, log_f_n, reg_params)
-
-
-	# end the timer
-	end_time = time.time()
-
-	# calculate the elapsed time
-	elapsed_time = end_time - start_time
-
-	print("Cycle: "+cycle+" Elapsed time: {:.2f} seconds".format(elapsed_time))
-
-	if 'R' in cycle_data.keys():
-	    del cycle_data['R']
-
-	cycle_data.create_dataset('R',data=R)
-
-	if 'L' in cycle_data.keys():
-	    del cycle_data['L']
-
-	cycle_data.create_dataset('L',data=L)
-
-	if 'x_re' in cycle_data.keys():
-	    del cycle_data['x_re']
-
-	cycle_data.create_dataset('x_re',data=x_re)
-
-	if 'x_im' in cycle_data.keys():
-	    del cycle_data['x_im']
-
-	cycle_data.create_dataset('x_im',data=x_im)
-
-\end{verbatim}
 
 
 \section{Results}
 \label{sec:org4a45003}
 
-\begin{verbatim}
-import numpy as np
-import h5py
-import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm, SymLogNorm
+EIS measurements reveal a complex evolution of the surface chemistry as the polishing voltage is increased through the 0.5 V to 1.0 V range. At 0.5 V the system exhibits a single capacitive process. This is most likely caused by the polarization of the electrical double-layer that occurs between the Nb electrode and the electrolyte. At this low voltage, the Nb\textsubscript{2}O\textsubscript{5} has not been formed due to the low oxidation current and high concentration of HF at the surface of the electrode. Therefore, the polarization resistance is entirely caused by the oxidation of metallic Nb.
 
-mm = 0.03937
+With a polarization of 1.0 V, the Nb shows three different time constants.
 
-data = h5py.File('./Data/data.hdf5')
+\begin{figure}
+  \label{fig:bodeplot}
+  \includegraphics[]{figures/bodeplot.png}
+  \caption{The complex impedance of Nb in electropolishing electrolyte measured using EIS. Each curve is offset from zero.}
+\end{figure}
 
-samples = data['samples']
+\begin{figure}
+  \label{fig:gamma}
+  \includegraphics[]{figures/gamma.png}  
+  \caption{The Distribution of relaxation times calculated from the EIS impedance data for each of the measured potentials. The current-voltage curve is shown in the graph on the left.}
+\end{figure}
 
-sample_serial_numbers = samples.keys()
-
-fig = plt.figure(figsize=(7,12))
-subfigs = fig.subfigures(nrows=4,ncols=1)
-
-
-for row, sample_serial_number in enumerate(sample_serial_numbers):
-    sample_data = samples[sample_serial_number+'/data']
-
-    x_re = []
-    x_im = []
-    Current = []
-    Current_min = []
-    Current_max = []
-    Electrode_Potential = []
-
-    for cycle in sample_data.keys():
-	cycle_data = sample_data[str(cycle)]
-	x_re.append(cycle_data['x_re'])
-	x_im.append(cycle_data['x_im'])
-	Current.append(np.mean(cycle_data['I']))
-	Current_min.append(np.min(cycle_data['I']))
-	Current_max.append(np.max(cycle_data['I']))
-	Electrode_Potential.append(np.mean(cycle_data['Ewe']))
-
-    x_re = np.array(x_re).T
-    x_im = np.array(x_im).T
-    Current = np.array(Current).T
-    Current_min = np.array(Current_min).T
-    Current_max = np.array(Current_max).T
-    Electrode_Potential = np.array(Electrode_Potential).T
+\begin{figure}
+  \label{fig:ec}
+  \includegraphics[]{figures/ec.png}
+  \caption{}
+\end{figure}
 
 
-
-    x_pos = (x_re - x_im)/2
-    x_neg = (x_re + x_im)/2
-    """Plotting"""
-
-    # Plot gamma functions
-    #Params
-    plot_freq_min = 1e0
-    plot_freq_max = 1e6
-    plot_points_per_decade = 10
-
-
-    #Convert to log
-    log_plot_freq_min = np.log(plot_freq_min)
-    log_plot_freq_max = np.log(plot_freq_max)
-    plot_points = int(plot_points_per_decade*(log_plot_freq_max-log_plot_freq_min))
-
-    #Generate plotting frequencies
-    log_plot_freq = np.linspace(log_plot_freq_min,log_plot_freq_max,plot_points)
-
-    pos_plot_freq = np.exp(log_plot_freq)
-    plot_freq = np.concatenate((np.flip(-pos_plot_freq),pos_plot_freq))
-
-
-    gamma_pos = np.sum(x_pos[None,:,:]*Gaussian_Func(log_plot_freq[:,None,None]-log_f_n[None,:,None],gaussian_width),axis=1)
-    gamma_neg = np.sum(x_neg[None,:,:]*Gaussian_Func(log_plot_freq[:,None,None]-log_f_n[None,:,None],gaussian_width),axis=1)
-
-    gamma = np.concatenate((np.flip(gamma_neg),gamma_pos))
-
-
-    #ax1, ax2 = subfig.subplots(nrows=1, ncols=2)    
-    fig, (ax1, ax2) = plt.subplots(ncols=2,dpi=300,sharey=True,gridspec_kw={'width_ratios': [1, 5]})
-
-    X,Y = np.meshgrid(plot_freq,Electrode_Potential,indexing='ij')
-
-    mesh = ax2.pcolormesh(X,Y,gamma,shading='nearest', cmap='viridis')
-    #mesh.set_norm(SymLogNorm(linthresh=1e-2))
-    cbar = fig.colorbar(mesh)
-
-    ax2.set_xscale('symlog')
-    ax2.set_xlabel('Frequency [rad/s]')
-    ax2.set_xticks([-1e5,-1e3,-1e1,0,1e1,1e3,1e5])
-    ax2.set_ylim(0.5,1.0)
-
-    ax1.plot(Current,Electrode_Potential)
-    ax1.fill_betweenx(Electrode_Potential, Current_min, Current_max, alpha = 0.2)
-    ax1.set_ylabel('Polishing Voltage [V]')
-    ax1.set_xlabel('Current [mA]')
-    ax1.invert_xaxis()
-    # ax1.set_xticks([0.1,0.2])
-    ax1.set_yticks(np.arange(0,5,1))
-    # ax1.set_xlim(0.2,0)
-
-    fig.subplots_adjust(wspace = 0)
-    #ax2.set_title(sample_serial_number)
-
-
-
-
-\end{verbatim}
 
 
 \section{Conclusion}
 \label{sec:org57282ed}
-This study shows that EIS measurements can be used to differentiate the eching and polishing regimes in niobium EP
+This study shows that EIS measurements can be used to differentiate the etching and polishing regimes in niobium EP
+
+
 \section{Supplemental Information}
 \label{sec:org60214d3}
-The EIS measurements were performed using a BioLogic VSP-300 potentiostat
 
-\subsection{Data Pre-Processing}
-\label{sec:org43eac05}
-EIS data from the potentiostat is exported as a series of text files, one for each sample, containing the electrode potential, current, frequency, impedance, and run number, which indicates which voltage step the measurement was performed at. To make the data more manageable, we convert the data into a hierarchical data format (HDF5). 
 
-To accomplish this we use the numpy python library to load the text files into arrays, and the h5py library to create the HDF5 file.
+\subsection{Proof of Equivalence Between Inductance and Negative Capacitance}
 
-\begin{verbatim}
-import numpy as np
-import h5py
-import os
-import pandas as pd
-from tabulate import tabulate
-\end{verbatim}
 
-First we create a new file to store all the data.
-
-\begin{verbatim}
-import os
-import h5py
-filename = 'Data/data.hdf5'
-if os.path.exists(filename):
-    os.remove(filename)
-f = h5py.File(filename,'a')
-print(f)
-\end{verbatim}
-
-Then we create a group to contain each of the samples.
-
-\begin{verbatim}
-samples = f.require_group("samples") #
-print(samples)
-\end{verbatim}
-
-We create the metadata strings for each of the samples in the Data directory.
-
-\begin{verbatim}
-from tabulate import tabulate
-import pandas as pd
-
-d = {'Serial Number': ["S35","S68","S67","S75"],
-     'Electrolyte Temperature': [21,13,13,21],
-     'Nitrogen Doped': ['No','No','Yes','Yes']}
-
-df = pd.DataFrame(data=d)
-
-print(tabulate(df, headers="keys", showindex=False, tablefmt="orgtbl"))
-
-\end{verbatim}
-
-\begin{verbatim}
-import numpy as np
-
-for i, sample in enumerate(df['Serial Number']):
-    f.create_dataset('samples/'+sample+'/electrolyte_temperature', data=np.asarray(df['Electrolyte Temperature']))
-    f.create_dataset('samples/'+sample+'/nitrogen_doped', data=np.asarray(df['Nitrogen Doped']))
-\end{verbatim}
-
-We load the text files containing the EIS data
-
-\begin{verbatim}
-import os
-import re
-
-# get the list of files and directories in the raw data  directory
-directory = 'Data/text_files/'
-text_files = os.listdir(directory)
-
-# get the samples from the data file
-samples = f['samples']
-
-# add the data to each sample
-for file in text_files:
-    for sample in samples:
-	if file.startswith(sample):
-	    data = pd.read_csv(directory+file,delimiter='\t')
-	    data = data.drop('Unnamed: 6', axis=1)
-
-	    Ewe = np.asarray(data['<Ewe>/V'])
-	    I = np.asarray(data['<I>/mA'])
-	    ImZ = np.asarray(-data['-Im(Z)/Ohm'])
-	    ReZ = np.asarray(data['Re(Z)/Ohm'])
-	    freq = np.asarray(data['freq/Hz'])
-	    cycle_number = np.asarray(data['cycle number'],dtype='uint8')
-
-	    nonzero_measurements = np.where(freq!=0)
-
-	    Ewe = Ewe[nonzero_measurements]
-	    I = I[nonzero_measurements]
-	    ImZ = ImZ[nonzero_measurements]
-	    ReZ = ReZ[nonzero_measurements]
-	    freq = freq[nonzero_measurements]
-	    cycle_number = cycle_number[nonzero_measurements]
-
-	    data_group = samples[sample].create_group('data',track_order=True)
-
-	    for cycle in range(cycle_number.min(),cycle_number.max()):
-
-		cycle_measurements = np.where(cycle_number == cycle)
-
-		data_group.create_dataset(str(cycle)+'/Ewe',data=np.asarray(Ewe[cycle_measurements]))
-		data_group.create_dataset(str(cycle)+'/I',data=np.asarray(I[cycle_measurements]))
-		data_group.create_dataset(str(cycle)+'/ImZ',data=np.asarray(ImZ[cycle_measurements]))
-		data_group.create_dataset(str(cycle)+'/ReZ',data=np.asarray(ReZ[cycle_measurements]))
-		data_group.create_dataset(str(cycle)+'/freq',data=np.asarray(freq[cycle_measurements]))
-\end{verbatim}
 \end{document}
