@@ -61,11 +61,11 @@ The complex impedance of the electrode is determined by the phase difference, \(
 & Z=Z'+jZ''
 \end{flalign}
 
-Here we use 'j' as the imaginary unit. Z' and Z'' are the real and imaginary components of Z.
+Here we use 'j' as the imaginary unit to avoid confusion with the current density frequently denoted by 'i'. Z' and Z'' are respectively the real and imaginary components of Z.
 
 
 
-The impedance spectrum of the niobium was deconvolved using the distribution of relaxation times (DRT) method. We consider the electrode as a collection of infinitesimal discrete circuit elements. This is motivated by the fact that the electrode and its surrounding environment is a 3-dimensional object where each point on the elctrode acts independantly from every other part of the elctrode. This is in contrast with the classical view of electrochemical systems that treat the electrodes as homogeneous objects described by a set of discrete curcuit elements.
+The impedance spectrum of the niobium was deconvolved using the distribution of relaxation times (DRT) method. We consider the electrode as a collection of infinitesimal discrete circuit elements. This is motivated by the fact that the electrode and its surrounding environment is a 3-dimensional object where each point on the elctrode acts independantly from every other part of the elctrode. This is in contrast with the classical view of electrochemical systems that treat the electrodes as homogeneous objects described by a finite set of discrete curcuit elements.
 
 The fundamental elctrochemical circuit element is the RC circuit, a resistor and a capacitor in parallel, and can be described by it's time constant, \(\tau\)=RC. Taking an infinite number of RC circuits in series we obtain what is known as a Voigt circuit. The impedance of an RC circuit and of an infinite Voight circuit is given by the equations:
 
@@ -91,12 +91,18 @@ To solve for the function \(\gamma\)(ln\(\tau\)) numerically, we discretize the 
 
 or in matrix form:
 
-\begin{flalign}
-  Z=& R\mathbf{1}+\mathbf{A'x}+j(\omega L\mathbf{1}+\mathbf{A''x}) \label{eq:Zmatrix}\\
+\begin{flalign}\label{eq:Zmatrix}
+  Z=& R\mathbf{1}+\mathbf{A'x}+j(\omega L\mathbf{1}+\mathbf{A''x}) \\
   \mathbf{x}=&[x_0,x_1,\ldots,x_N]^T\\
-  \mathbf{A'}=&\int_{-\infty}^{\infty}\frac{\phi_{n}(ln\tau)dln\tau}{1+\omega^2\tau^2}\label{eq:A'}\\
-  \mathbf{A''}=&\int_{-\infty}^{\infty}\frac{-\omega\tau\phi_{n}(ln\tau)dln\tau}{1+\omega^2\tau^2}\label{eq:A''}
 \end{flalign}
+
+\begin{equation}\label{eq:Aprime}
+  \mathbf{A'}=\int_{-\infty}^{\infty}\frac{\phi_{n}(ln\tau)dln\tau}{1+\omega^2\tau^2}
+\end{equation}
+
+\begin{equation}\label{eq:Adoubleprime}
+  \mathbf{A''}=\int_{-\infty}^{\infty}\frac{-\omega\tau\phi_{n}(ln\tau)dln\tau}{1+\omega^2\tau^2}
+\end{equation}
 
 to solve for \mathbf{x} we fit equation\textasciitilde{}\ref{eq:matrix} to the experimental impedance measurements by minimizing the square difference. The matrix \mathbf{M} is a normalization term to prevent overfitting.
 
@@ -143,21 +149,6 @@ The number of test functions used in the DRT fit was set to 12 functions per dec
 
 The width, \(\mu\), of the gaussian function is set such that the full width at half maximum (FWHM) is equal to ln\(\omega\)\textsubscript{n+1}-ln\(\omega\)\textsubscript{n-1}.
 
-
-\subsection{Numerical Integration of \mathbf{A'} and \mathbf{A''}}
-\label{sec:org84f1f26}
-
-To calculate the matrices \mathbf{A'} and \mathbf{A''}, the integral\textasciitilde{}\ref{eq:A'} and\textasciitilde{} \ref{eq:A''} must be integrated numerically. This calculation is performed using the Gaussian quadrature method.
-
-\begin{flalign}
-  \int_{a}^{b}f(x)dx \approx & \frac{b-a}{2} \sum_{i=1}^{n}w_{i}f(\frac{b-a}{2}\xi_{i}+\frac{b-a}{2})
-\end{flalign}
-
-Here \(\xi\) are the roots of the n-th Legendre polynomial and w are the weights are calculated from the derivative of the n-th Legendre polynomial using the equation
-
-\begin{flalign}
-  w_{i} =& -\frac{2}{(1-\xi_{i}^{2})(P'_{n}(\xi_{i}))}
-\end{flalign}
 
 
 
@@ -226,6 +217,23 @@ This study shows that EIS measurements can be used to differentiate the etching 
 
 
 \subsection{Proof of Equivalence Between Inductance and Negative Capacitance}
+
+\subsection{Numerical Integration of \mathbf{A'} and \mathbf{A''}}
+\label{sec:org84f1f26}
+
+To calculate the matrices \mathbf{A'} and \mathbf{A''}, the integral\textasciitilde{}\ref{eq:Aprime} and\textasciitilde{} \ref{eq:Adoubleprime} must be integrated numerically. This calculation is performed using the Gaussian quadrature method.
+
+\begin{flalign}
+  \int_{a}^{b}f(x)dx \approx & \frac{b-a}{2} \sum_{i=1}^{n}w_{i}f(\frac{b-a}{2}\xi_{i}+\frac{b-a}{2})
+\end{flalign}
+
+Here \(\xi\) are the roots of the n-th Legendre polynomial and w are the weights are calculated from the derivative of the n-th Legendre polynomial using the equation
+
+\begin{flalign}
+  w_{i} =& -\frac{2}{(1-\xi_{i}^{2})(P'_{n}(\xi_{i}))}
+\end{flalign}
+
+
 
 
 \end{document}
