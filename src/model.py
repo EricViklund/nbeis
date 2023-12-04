@@ -23,31 +23,66 @@ class Function:
 class Model:
     """An electrochemical model that consists of a cost function to be minimized and a fit function that estimates the experimental values based on the fitting parameters."""
 
-    def __init__(self, cost_functions: list[Function], fit_functions: list[Function], initial_guess: list):
+    def __init__(self, cost_functions: list[Function], fit_functions: list[Function], norm_functions: list[Function], initial_guess: list):
         self.cost_functions = cost_functions
         self.fit_functions = fit_functions
+        self.norm_functions = norm_functions
         self.fit_parameters = initial_guess
+
+        self.param_shapes = [param.shape[0] for param in self.fit_parameters]
+        self.param_indices = [0]
+        for i in range(len(self.param_shapes)):
+            self.param_indices.append(self.param_indices[i]+self.param_shapes[i])
+        print(self.param_indices)
 
     def cost(self,x):
         cost = 0
 
+        Z_sim_re, Z_sim_im = 0, 0
+
+        for i, function in enumerate(self.fit_functions):
+            result = function.evaluate(x[self.param_indices[i]:self.param_indices[i+1]])
+            Z_sim_re += result[0]
+            Z_sim_im += result[1]
+
         for function in self.cost_functions:
-            cost += function.evaluate(x)
+            cost += function.evaluate(Z_sim_re, Z_sim_im)
+
+        for i, function in enumerate(self.norm_functions):
+            cost += function.evaluate(x[self.param_indices[i]:self.param_indices[i+1]])
 
         return cost
     
     def cost_jacobian(self,x):
         cost_jacobian = 0
 
+        Z_sim_re, Z_sim_im = 0, 0
+
+        for i, function in enumerate(self.fit_functions):
+            result = function.evaluate(x[self.param_indices[i]:self.param_indices[i+1]])
+            Z_sim_re += result[0]
+            Z_sim_im += result[1]
+
+        dZ_sim_re = np.zeros(x.shape[0])
+        dZ_sim_im = np.zeros(x.shape[0])
+
+        for i, function in enumerate(self.fit_functions):
+            result = function.jacobian(x[self.param_indices[i]:self.param_indices[i+1]])
+            dZ_sim_re[self.param_indices[i]:self.param_indices[i+1]] += result[0]
+            dZ_sim_im[self.param_indices[i]:self.param_indices[i+1]] += result[1]
+
         for function in self.cost_functions:
-            cost_jacobian += function.jacobian(x)
+            cost_jacobian += function.jacobian(Z_sim_re, Z_sim_im, dZ_sim_re, dZ_sim_im)
+
+        for function in self.norm_functions:
+            cost_jacobian += function.jacobian(x[self.param_indices[i]:self.param_indices[i+1]])
 
         return cost_jacobian
 
     def fit(self):
 
         if len(self.fit_parameters) > 1:
-            params = np.concatenate(*self.fit_parameters)
+            params = np.concatenate(self.fit_parameters)
         else:
             params = self.fit_parameters[0]
 
@@ -63,16 +98,14 @@ class Model:
 
 class Least_Squares(Function):
 
-    def __init__(self, Z_exp_re, Z_exp_im, fit_function: Function):
+    def __init__(self, Z_exp_re, Z_exp_im):
 
         self.Z_exp_re = Z_exp_re
         self.Z_exp_im = Z_exp_im
-        self.fit_function = fit_function
 
     
-    def evaluate(self,x):
+    def evaluate(self,Z_sim_re,Z_sim_im):
     
-        Z_sim_re, Z_sim_im = self.fit_function.evaluate(x)
 
         Re_cost = np.linalg.norm((self.Z_exp_re-Z_sim_re))
         Im_cost = np.linalg.norm((self.Z_exp_im-Z_sim_im))
@@ -81,11 +114,7 @@ class Least_Squares(Function):
 
         return cost
     
-    def jacobian(self,x):
-
-        Z_sim_re, Z_sim_im = self.fit_function.evaluate(x)
-
-        dZ_sim_re, dZ_sim_im = self.fit_function.jacobian(x)
+    def jacobian(self,Z_sim_re,Z_sim_im,dZ_sim_re,dZ_sim_im):
 
         dRe_cost = -2*np.sum((self.Z_exp_re-Z_sim_re)[:,None]*dZ_sim_re,axis=0)
         dIm_cost = -2*np.sum((self.Z_exp_im-Z_sim_im)[:,None]*dZ_sim_im,axis=0)
@@ -94,7 +123,7 @@ class Least_Squares(Function):
 
         return dcost
     
-class Normalization(Function):
+class Norm(Function):
 
     def __init__(self, norm_matrix):
 
@@ -133,6 +162,20 @@ class DRT_Fit(Function):
     def jacobian(self,x):
 
         return self.A_re, self.A_im
+    
+class Inductor_Fit(Function):
+
+    def __init__(self,f_m):
+
+        self.f_m = f_m
+
+    def evaluate(self, x):
+        
+        return 0, np.exp(f_m)*x
+    
+    def jacobian(self,x):
+
+        return 0, np.exp(f_m)
 
 
 
@@ -276,9 +319,13 @@ f_n = log_f_n
 A_re, A_im = integrate_test_functions(f_m, f_n, gaussian_width/2.355)
 
 
-fit_function = DRT_Fit(A_re,A_im)
+DRT_function = DRT_Fit(A_re,A_im)
+parameters = np.zeros((number_of_fitting_params))
 
-cost_function = Least_Squares(Z_exp_re,Z_exp_im,fit_function)
+Inductor = Inductor_Fit(f_m)
+L0 = np.array((0,))
+
+
 
 
 
@@ -296,13 +343,14 @@ for k in range(reg_params.shape[0]):
     M[:f_n.shape[0],:f_n.shape[0]] += reg_params[k]*integral.reshape(fn_mesh.shape).T
 
 
+cost_function = Least_Squares(Z_exp_re,Z_exp_im)
 
-norm_function = Normalization(M)
-
-parameters = np.zeros((number_of_fitting_params))
+norm_function = Norm(M)
 
 
-new_model = Model((cost_function,norm_function),(fit_function,),(parameters,))
+
+
+new_model = Model((cost_function,),(DRT_function,Inductor),(norm_function,),(parameters,L0))
 
 result = new_model.fit()
 
