@@ -12,6 +12,7 @@
 \usepackage{amsmath}
 \usepackage{textcomp}
 \usepackage{amssymb}
+\usepackage{mhchem}
 
 \author{Eric Viklund}
 \date{\date}
@@ -70,6 +71,7 @@ The impedance spectrum of the niobium was deconvolved using the distribution of 
 The fundamental elctrochemical circuit element is the RC circuit, a resistor and a capacitor in parallel, and can be described by it's time constant, \(\tau\)=RC. Taking an infinite number of RC circuits in series we obtain what is known as a Voigt circuit. The impedance of an RC circuit and of an infinite Voight circuit is given by the equations:
 
 \begin{flalign}
+  \label{eq:Zrc}
   Z_{RC}&=\frac{R}{1+j\omega\tau}\\
   Z_{Voigt} &= R + j \omega L + \int_{0}^{\infty} \frac{G(\tau) d \tau}{1 + j \omega \tau}
 \end{flalign}
@@ -79,7 +81,8 @@ The function G(\(\tau\)) is the distribution of relaxation times of the measured
 It is more convenient to rewrite the integral in a log scale, since EIS measurements are typically performed over multiple orders of magnitude.
 
 \begin{flalign}
-  Z=&R+j\omega L+\int_{-\infty}^{\infty}\frac{\gamma(ln\tau)dln\tau}{1+j\omega \tau}
+  \label{eq:Zdrt}
+  Z=&R_{s}+j\omega L+\int_{-\infty}^{\infty}\frac{\gamma(ln\tau)dln\tau}{1+j\omega \tau}
 \end{flalign}
 
 To solve for the function \(\gamma\)(ln\(\tau\)) numerically, we discretize the problem by introducing a test function.
@@ -132,6 +135,7 @@ The optimum values of \(\lambda\)\textsubscript{k} are not trivial to find. High
 
 
 
+
 \section{Calculations}
 \label{sec:org176ad82}
 
@@ -152,18 +156,53 @@ The width, \(\mu\), of the gaussian function is set such that the full width at 
 
 
 
-
-\subsection{Cost Function}
-\label{sec:org4b6f224}
-
-The cost function is defined by the square of the difference between the measured and calculated impedance and a normalization term.
+\subsection{Electrochemical Origin of the RC Model}
 
 
 
 
 
-\subsection{Minimization Algorithm}
-\label{sec:org7092583}
+\subsection{Generalized DRT}
+
+To completely describe the electrochemistry of niobium electropolishing two generalizations to the standard DRT procedure are necessary. The first generalization is to include inductive elements into the DRT model. Equation \ref{eq:Zrc} can be shown to be equivalent to an inductive RL circuit with the same natural frequency by negating the impedance of the RC function and adding an additional series resistor with the same resistance as the RC circuit.
+
+\begin{flalign}
+  Z_{RL} = \frac{j\frac{\omega}{\omega_{0}}R}{1+j\frac{\omega}{\omega_{0}}}\\
+  Z_{RL} = R - \frac{R}{1+j\frac{\omega}{\omega_{0}}}
+\end{flalign}
+
+This means we can easily include inductive elements into the DRT model by allowing the value of G to become negative and adding a new resistor in series to account for the negative values of G. \cite{kobayashi2022extended}
+
+\begin{flalign}
+  Z=&R_{s}+R_{adj}+j\omega L+\int_{-\infty}^{\infty}\frac{\gamma(ln\tau)dln\tau}{1+j\omega \tau}\\
+  R_{adj} = \int_{-\infty}^{\infty}\min{(\gamma(ln\tau),0)}dln\tau
+\end{flalign}
+
+The second generalization is the addition of positive gain elements to the model. These elements correspond to processes that release energy which leads to a negative differential resistance. These elements can be included by adding a second integral to the DRT model.
+
+\begin{flalign}
+  Z = R_{s} + R_{adj} + j\omega L + \int_{-\infty}^{\infty}\frac{\gamma_{+}(ln\tau)dln\tau}{1+j\omega \tau} + \int_{-\infty}^{\infty}\frac{\gamma_{-}(ln\tau)dln\tau}{1-j\omega \tau}
+\end{flalign}
+
+By applying the same process used to reach equation \ref{eq:Zmatrix} we arrive at the discretized form of the generalized DRT model
+
+\begin{flalign}
+  Z=& R_{s}+R_{adj}+\mathbf{A'x_{re}}+j(\omega L+\mathbf{A''x_{im}})
+\end{flalign}
+
+A' and A'' are the same integrals as before. $\gamma_{+}$ and $\gamma_{-}$ are given by the equations
+
+\begin{flalign}
+  \gamma_{+}(\ln(\omega)) = \sum_n (x_{re,n}+x_{im,n}) \phi_{n}(\ln(\omega))\\
+  \gamma_{-}(\ln(\omega)) = \sum_n (x_{re,n}-x_{im,n}) \phi_{n}(\ln(\omega))
+\end{flalign}
+
+
+\subsection{Justification for Negative Capacitances and Resistances}
+
+The use of negative capacitances and resistances in electrochemical systems may seem to violate the laws of physics at first glance. However, it is important to remember that the equivalent circuit is not a physical circuit that exists within the electrode. Instead, the equivalent circuit should be viewed as a mathematical tool used to extract information from the EIS spectrum. 
+
+The meaning of negative resistances and capacitances should instead be considered from the perspective of chemical reactions. The existance of a negative capacitance somply indicates a chemical process that causes the current phase to lead the voltage phase instead of the other way around. It does not imply the existance of any inductance, although the circuit can be recreated with inductors instead of capacitors, nor the existance of a magnetic field. A negative resistance indicates a chemical process that causes the current through the electrode to decrease when the voltage is increased as is the case when there exists a blocking species such as an oxide film that lowers the overall chemical reaction rate.
 
 
 
@@ -179,12 +218,28 @@ The EIS measurements were performed using a BioLogic VSP-300 potentiostat.
 
 
 
+
+
+
+
+
+
+
 \section{Results}
 \label{sec:org4a45003}
 
-EIS measurements reveal a complex evolution of the surface chemistry as the polishing voltage is increased through the 0.5 V to 1.0 V range. At 0.5 V the system exhibits a single capacitive process. This is most likely caused by the polarization of the electrical double-layer that occurs between the Nb electrode and the electrolyte. At this low voltage, the Nb\textsubscript{2}O\textsubscript{5} has not been formed due to the low oxidation current and high concentration of HF at the surface of the electrode. Therefore, the polarization resistance is entirely caused by the oxidation of metallic Nb.
+EIS measurements reveal a complex evolution of the surface chemistry as the polishing voltage is increased through the 0.5 V to 1.0 V range. As shown in \ref{fig:nyquistplot}, at 0.5 V the system exhibits a single capacitive process. This is most likely caused by the polarization of the electrical double-layer that occurs between the Nb electrode and the electrolyte. At this low voltage, the Nb\textsubscript{2}O\textsubscript{5} has not been formed due to the low oxidation current and high concentration of HF at the surface of the electrode. Therefore, the polarization resistance is entirely caused by the oxidation of metallic Nb.
 
-With a polarization of 1.0 V, the Nb shows three different time constants.
+When the voltage is increased, two new features appear, an inductive loop at mid-frequencies and a second capacitive loop at low frequencies.
+
+\begin{figure}
+  \label{fig:nyquistplot}
+  \includegraphics[]{figures/nyquist.png}
+  \caption{The complex impedance of Nb. Each plot shows the different regimes of electropolishing at low voltage. A one capacitive loop, B two capacitive loops, C capacitive, inductive, and capacitive loops, D capacitive, inductive, and capacitive loop with a negative resistance.}
+\end{figure}
+
+
+
 
 \begin{figure}
   \label{fig:bodeplot}
@@ -198,12 +253,72 @@ With a polarization of 1.0 V, the Nb shows three different time constants.
   \caption{The Distribution of relaxation times calculated from the EIS impedance data for each of the measured potentials. The current-voltage curve is shown in the graph on the left.}
 \end{figure}
 
+
+
+
+
+\subsection{Physical Interpretation of Niobium Impedance Spectrum}
+
+The appearance of the low frequency capacitive loop is likely due to the formation of a thin compact oxide film on the niobium electrode. This occurs when the rate of oxidation exceeds the rate of oxide dissolution by the HF acid. When this happens the faradaic reaction transitions from single step to two steps. To analyze this phenomenon we propose a simplified two step oxidation reaction model where the niobium is oxidized to the V oxidation state and then chemically dissolved into the solution. In other words the average oxidation state of the oxide surface is assumed to be close to V.
+
+\begin{flalign}
+  \ce{Nb -> Nb_{V}^{5+} + 5e^-}\\
+  \ce{Nb_{V}^{5+} -> Nb_{aq}}
+\end{flalign}
+
+From this reaction equation we can derive a set of differential equations that describe the dynamics of the electrode. Using the method described by Xiaojuan Wu, et al\cite{wu1998investigation,wu1999general} the surface coverage of $Nb_{V}^{5+}$ is given by the equation.
+
+\begin{flalign}
+  \beta \frac{d \theta}{dt} = g(\theta) = K_1 (1-\theta) - K_2 \theta
+  i_F = 5 F \beta K_1 \theta
+\end{flalign}
+
+\begin{flalign}
+  A_1 = -5FK_1^2K_2\frac{b_1-b_2}{K_1+K_2}
+  h = -(K_1+K_2)
+  R_t = \frac{K_1+K_2}{5F\beta b_1 K_1 K_2}
+\end{flalign}
+
+the faradaic impedance caused by this two step reaction can be described by a resistor-inductor circuit.
+
+\begin{flalign}
+  Y_F = \frac{1}{R_t} + \frac{1}{R_1 + j \omega L_1}\\
+
+  Y = Y_F + j \omega C_{dl}
+\end{flalign}
+
+\begin{flalign}
+  A_1 = \frac{1}{L_1}\\
+  h = \frac{R_1}{L_1}
+\end{flalign}
+
+
+
+In the high frequency regime, the impedance is dominated by the double layer capacitance and the admittance can be reduced to the equation
+
+\begin{flalign}
+  Y = \frac{1}{R_t} + j \omega C_{dl}\\
+  Z = \frac{R_t}{1 + j \frac{\omega}{\omega_{dl}}}\\
+  \omega_{dl} = \frac{1}{R_t C_{dl}}
+\end{flalign}
+
+The double layer capacitance loop intersects the real axis at $Z = R_t$.
+
+At low frequency the impedance is dominated by the faradaic impedance leading to the equation
+
+\begin{flalign}
+  Y = Y_F = \frac{1}{R_t} + \frac{1}{R_1 + j \omega L_1}\\
+  Z = R_t + \frac{\frac{R_t^2}{R_1+R_t}}{1 + j \frac{\omega}{\omega_{1}}}\\
+  \omega_{1} = \frac{R_1+R_t}{L_1}
+\end{flalign}
+
+The faradaic impedance loop will intersect the real axis at the value $Z = R_t + \frac{\frac{R_t^2}{R_1+R_t}}$. From this equation we see that if $R_1$ is negative and $|R_1| > R_t$ the faradaic loop will intersect the real axis at a lower impedance than the capacitive loop or even at a negative resistance.
+
 \begin{figure}
   \label{fig:ec}
   \includegraphics[]{figures/ec.png}
   \caption{}
 \end{figure}
-
 
 
 
