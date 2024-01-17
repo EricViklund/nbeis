@@ -269,27 +269,28 @@ The appearance of the low frequency capacitive loop is likely due to the formati
 From this reaction equation we can derive a set of differential equations that describe the dynamics of the electrode. Using the method described by Xiaojuan Wu, et al\cite{wu1998investigation,wu1999general} the surface coverage of $Nb_{V}^{5+}$ is given by the equation.
 
 \begin{flalign}
-  \beta \frac{d \theta}{dt} = g(\theta) = K_1 (1-\theta) - K_2 \theta
-  i_F = 5 F \beta K_1 \theta
+  \beta \frac{d \theta}{dt} = g(\theta) = K_1 (1-\theta) - K_{-1} (1-\theta) - K_2 \theta\\
+  i_F = 5 F \beta (1 - \theta) (K_1 - K_{-1})
 \end{flalign}
 
 \begin{flalign}
-  A_1 = -5FK_1^2K_2\frac{b_1-b_2}{K_1+K_2}
-  h = -(K_1+K_2)
-  R_t = \frac{K_1+K_2}{5F\beta b_1 K_1 K_2}
+  A_1 = -5F K_2 \left(b_1 K_1 - b_{-1} K_{-1}\right)\\
+  h = \frac{1}{\beta}(K_1-K_{-1}+K_2)\\
+  \frac{1}{R_t} = 5F\beta K_2 \frac{b_1 K_1 - b_{-1} K_{-1}}{K_1 - K_{-1}}\\
 \end{flalign}
 
 the faradaic impedance caused by this two step reaction can be described by a resistor-inductor circuit.
 
 \begin{flalign}
   Y_F = \frac{1}{R_t} + \frac{1}{R_1 + j \omega L_1}\\
-
   Y = Y_F + j \omega C_{dl}
 \end{flalign}
 
 \begin{flalign}
   A_1 = \frac{1}{L_1}\\
-  h = \frac{R_1}{L_1}
+  h = \frac{R_1}{L_1}\\
+  R_1 = \frac{h}{A_1} = -\frac{K_1 - K_{-1} + K_2}{5F \beta K_2 \left(b_1 K_1 - b_{-1} K_{-1}\right)}\\
+  L_1 = \frac{1}{A_1} = -\frac{1}{5F K_2 \left(b_1 K_1 - b_{-1} K_{-1}\right)}
 \end{flalign}
 
 
@@ -312,7 +313,7 @@ At low frequency the impedance is dominated by the faradaic impedance leading to
   \omega_{1} = \frac{R_1+R_t}{L_1}
 \end{flalign}
 
-The faradaic impedance loop will intersect the real axis at the value $Z = R_t + \frac{\frac{R_t^2}{R_1+R_t}}$. From this equation we see that if $R_1$ is negative and $|R_1| > R_t$ the faradaic loop will intersect the real axis at a lower impedance than the capacitive loop or even at a negative resistance.
+The faradaic impedance loop will intersect the real axis at the value $Z = R_t + \frac{R_t^2}{R_1+R_t}$. From this equation we see that if $R_1 + R_t$ is negative, the faradaic loop will curl to the left on the nyquist diagram indicating a reduced differential resistance.
 
 \begin{figure}
   \label{fig:ec}
@@ -320,6 +321,10 @@ The faradaic impedance loop will intersect the real axis at the value $Z = R_t +
   \caption{}
 \end{figure}
 
+
+\section*{Discussion}
+
+The negative resistance faradaic loop measured in this study could provide a reasonable explanation for the spontaneous current oscillation phenomenon encountered frequently during cavity EP. For the model analyzed in the previous section, the system is stable when the value of $h$ is positive.
 
 
 \section{Conclusion}
