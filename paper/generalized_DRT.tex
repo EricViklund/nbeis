@@ -13,6 +13,7 @@
 \usepackage{textcomp}
 \usepackage{amssymb}
 \usepackage{mhchem}
+\usepackage{siunitx}
 
 \author{Eric Viklund}
 \date{\date}
@@ -57,11 +58,11 @@ EIS measurements reveal a complex evolution of the surface chemistry as the poli
 
 When the voltage is increased, two new features appear, an inductive loop at mid-frequencies and a second capacitive loop at low frequencies. This low frequency loop as caused by the formation of the oxide film and depletion of the HF near the electrode surface. This limits the current through the electrode at higher voltages. 
 
-When the voltage is increased from \qty{0.78}{\volt} to \qty{0.86}{\volt} the low frequency loop changes from decreasing impedance with increasing frequency to increasing as shown in \ref{fig:nyquistplot}.
+When the voltage is increased from \qty{0.78}{\volt} to \qty{0.86}{\volt} the low frequency loop changes from decreasing impedance with increasing frequency to increasing as shown in figure~\ref{fig:nyquistplot}.
 
-\begin{figure}
+\begin{figure}[t]
   \label{fig:nyquistplot}
-  \includegraphics[]{figures/nyquist.png}
+  \includegraphics[width=\textwidth]{../figures/nyquist.png}
   \caption{The complex impedance of Nb. Each plot shows the different regimes of electropolishing at low voltage. A one capacitive loop, B two capacitive loops, C capacitive, inductive, and capacitive loops, D capacitive, inductive, and capacitive loop with a negative resistance.}
 \end{figure}
 
@@ -70,9 +71,9 @@ The capacitive loop with increasing real impedance is indicative of a surface bl
 For Nb electropolishing the blocking species is most likely niobium oxide, which limits the electrode reaction rate when the surface HF layer is depleted. The appearance of this low frequency impedance loop coincides with a significant change in the surface morphology of the electropolished Nb. The surface changes from an etched and facetted surface to a smooth surface at areound the same voltage as the low frequency loop appears. This is caused by the formation of the oxide film and depletion of the HF at the surface which makes the material removal rate more constant across the surface and eliminates any differences in surface energy caused by grain orientation.
 
 
-\begin{figure}
+\begin{figure}[t]
     \label{fig:surface_maps}
-    \includegraphics[]{figures/surface_maps.png}
+    \includegraphics[width=\textwidth]{../figures/surface_maps.png}
     \caption{The surface height maps of Nb samples electropolished at different voltages and temperatures.}
 \end{figure}
 
@@ -90,8 +91,8 @@ Traditional distribution of relaxation time analysis is based on an circuit mode
 
 \begin{flalign}
   \label{eq:Zrc}
-  Z_{RC}&=\frac{R}{1+j\omega R C}\\
-  Z_{DRT} &= R_{s} + \int_{0}^{\infty} \frac{G(\omega_0) d \omega_0}{1 + j \frac{\omega}{\omega_0}}
+  Z_{RC}\left(\omega\right) &= \frac{R}{1+j\omega R C}\\
+  Z_{DRT}\left(\omega\right) &= R_{s} + \int_{0}^{\infty} \frac{G(\omega_0) d \omega_0}{1 + j \frac{\omega}{\omega_0}}
 \end{flalign}
 
 This model is sufficient to describe any capacitive-like processes with positive real impedance and negative imaginary impedance. However, this does not encompass all possible behaviors of electrochemical systems. The impedance of electrochemical systems can exist in all four quadrants of the complex impedance plane. For example, as seen in figure \ref{fig:nyquistplot}, for Nb electropolishing the low frequency impedance loop curls to the left at \qty{0.86}{\volt}. This impedance behavior can not be fitted by the traditional DRT method. The traditional method also can not fit inductive effects, which we measure during Nb EP. 
@@ -100,12 +101,14 @@ To explain these different behaviors it is more intuitive to abandon the circuit
 
 \begin{flalign}
     \label{eq:gDRT}
-    Z_{F} &= R_{t} + \sum_{i=1}^{n} \frac{k_{i}}{i \omega - s_{i}}
-    Z_{gDRT} &= R_{t} + \int_{-\infty}^{\infty} \frac{k\left(s\right) ds}{i\omega - s}
-
+    Z_{F}\left(\omega\right) &= R_{t} + \sum_{i=1}^{N} \frac{k_{i}}{i \omega - s_{i}} \\
+    Z_{gDRT}\left(\omega\right) &= R_{t} + \int_{-\infty}^{\infty} \frac{k\left(s\right) ds}{i\omega - s} \\
+    k\left(s\right) &= \nu G\left(\nu\right) \\
+    s &= -\nu \\
+    Z_{gDRT}\left(\omega\right) &= R_{t} + \int_{-\infty}^{\infty} \frac{G\left(\nu\right) d\nu}{1 + i\frac{\omega}{\nu}}
 \end{flalign}
 
-If we let $s_{i} = \frac{1}{R_i C_i}$ and $k_{i} = \frac{1}{C_i}$ we see that this equation describes a voigt element. However, the dynamical systems approach does not assume that the impedance must follow the impedance of any real circuit elements. The constants $s_{i}$ and $k_{i}$ can take on both positive and negative values. If we perform the same procedure used to derive the DRT function for infinitesimal voigt elements, we arrive at the same expression with the only difference being the limits of integration span the entire real axis instead of just the positive real axis. The function $G\left(w_0\right)$ is also free to take both positive and negative values.
+If we let $s_{i} = \frac{-1}{R_i C_i}$ and $k_{i} = \frac{1}{C_i}$ we see that this equation describes a voigt element. However, the dynamical systems approach does not assume that the impedance is limited to any capacitor, inductor, or resistor. The constants $s_{i}$ and $k_{i}$ can take on both positive and negative values. If we perform the same procedure used to derive the DRT function for infinitesimal voigt elements, we arrive at the same expression with the only difference being the limits of integration span the entire real axis instead of just the positive real axis. The function $G\left(w_0\right)$ is also free to take both positive and negative values.
 
 The mathematical derivation of the generalized DRT model is available in the supplemental section of this paper along with details on the numerical fitting method used to solve for the distribution of relaxation times.
 
@@ -115,19 +118,19 @@ The mathematical derivation of the generalized DRT model is available in the sup
 
 Using the generalized DRT method, we are able to fit the Nb impedance spectrum across all frequencies including the inductive mid-frequency loop and the low frequency behavior as seen in figure \ref{fig:bodeplot}. Figure \ref{fig:gamma} shows distinct peaks in the relaxation time distribution which indicates that the model is not overfitting.
 
-\begin{figure}
+\begin{figure}[t]
   \label{fig:bodeplot}
-  \includegraphics[]{figures/bodeplot.png}
+  \includegraphics[width=\textwidth]{../figures/bodeplot.png}
   \caption{The complex impedance of Nb in electropolishing electrolyte measured using EIS. Each curve is offset from zero.}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[t]
   \label{fig:gamma}
-  \includegraphics[]{figures/gamma.png}  
+  \includegraphics[width=\textwidth]{../figures/gamma.png}  
   \caption{The Distribution of relaxation times calculated from the EIS impedance data for each of the measured potentials. The current-voltage curve is shown in the graph on the left.}
 \end{figure}
 
-From figure \ref{fig:gamma} we can see that there are three promeinent peaks in the distribution of relaxations times. The peak centered around \qtyrange{100}{1000}{\hertz} corresponds to the electric double layer capacitance. The two other peaks centered around \qty{10}{\hertz} most likely correspond to the oxide layer. This low frequency peak gets more pronounced at higher voltages which indicates greater electrical impedance due to the oxide film. Around \qty{0.75}{\volts} the third peak appears in the negative \qty{10}{\hertz} region. This peak indicates that the oxide film is blocking the current flow leading to a negative current-voltage relationship.
+From figure \ref{fig:gamma} we can see that there are three promeinent peaks in the distribution of relaxations times. The peak centered around \qtyrange{100}{1000}{\hertz} corresponds to the electric double layer capacitance. The two other peaks centered around \qty{10}{\hertz} most likely correspond to the oxide layer. This low frequency peak gets more pronounced at higher voltages which indicates greater electrical impedance due to the oxide film. Around \qty{0.75}{\volt} the third peak appears in the negative \qty{10}{\hertz} region. This peak indicates that the oxide film is blocking the current flow leading to a negative current-voltage relationship.
 
 
 
@@ -183,13 +186,13 @@ or in matrix form:
   \mathbf{A''}=\int_{-\infty}^{\infty}\frac{-\omega\tau\phi_{n}(ln\tau)dln\tau}{1+\omega^2\tau^2}
 \end{equation}
 
-to solve for \mathbf{x} we fit equation~\ref{eq:matrix} to the experimental impedance measurements by minimizing the square difference. The matrix \mathbf{M} is a normalization term to prevent overfitting.
+to solve for x we fit equation~\ref{eq:matrix} to the experimental impedance measurements by minimizing the square difference. The matrix M is a normalization term to prevent overfitting.
 
 \begin{flalign}
   \min_{\mathbf{x},R,L}[||Z'_{exp}-(R\mathbf{1}+\mathbf{A'x})||^2+||Z''_{exp}-(\omega L\mathbf{1}+\mathbf{A''x})||^2+|\mathbf{xMx}^{T}|]
 \end{flalign}
 
-\mathbf{M} is calculated by integrating the function G(\(\tau\)) and it's derivatives. The derivative of G is equal to the sum of the derivatives of the test functions.
+M is calculated by integrating the function G and it's derivatives. The derivative of G is equal to the sum of the derivatives of the test functions.
 
 \begin{flalign}
   \frac{d^{k}\gamma}{dln\tau^{k}} =& \sum_{n=0}^{N}x_{n}\frac{d^{k}\phi_{n}}{dln\tau^{k}}
@@ -219,16 +222,16 @@ To discretize the DRT function, we use a set of Gaussian test functions evenly s
   \phi_{n}(ln\omega) &= x_{n}e^{\frac{ln\omega-ln\omega{n}}{\mu}}
 \end{flalign}
 
-The number of test functions used in the DRT fit was set to 12 functions per decade. The minimum and maximum \omega_n for the test functions was set to a range spanning three magnitudes lower than the minimum measured frequency to the highest measured frequency. 
+The number of test functions used in the DRT fit was set to 12 functions per decade. The minimum and maximum $\omega_n$ for the test functions was set to a range spanning three magnitudes lower than the minimum measured frequency to the highest measured frequency. 
 
 The width, \(\mu\), of the gaussian function is set such that the full width at half maximum (FWHM) is equal to ln\(\omega\)\textsubscript{n+1}-ln\(\omega\)\textsubscript{n-1}.
 
 
 
-\subsection{Numerical Integration of \mathbf{A'} and \mathbf{A''}}
+\subsection{Numerical Integration of A' and A''}
 \label{sec:org84f1f26}
 
-To calculate the matrices \mathbf{A'} and \mathbf{A''}, the integral\textasciitilde{}\ref{eq:Aprime} and\textasciitilde{} \ref{eq:Adoubleprime} must be integrated numerically. This calculation is performed using the Gaussian quadrature method.
+To calculate the matrices A' and A'', the integral~\ref{eq:Aprime} and~\ref{eq:Adoubleprime} must be integrated numerically. This calculation is performed using the Gaussian quadrature method.
 
 \begin{flalign}
   \int_{a}^{b}f(x)dx \approx & \frac{b-a}{2} \sum_{i=1}^{n}w_{i}f(\frac{b-a}{2}\xi_{i}+\frac{b-a}{2})
@@ -240,7 +243,7 @@ Here \(\xi\) are the roots of the n-th Legendre polynomial and w are the weights
   w_{i} =& -\frac{2}{(1-\xi_{i}^{2})(P'_{n}(\xi_{i}))}
 \end{flalign}
 
-
+\bibliography{generalized_DRT}
 
 
 \end{document}
