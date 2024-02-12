@@ -40,6 +40,33 @@ In this study, we use a model-free method of analyzing the EIS spectrum called d
 
 Using this method, we are able to observe the formation of the Nb\textsubscript{2}O\textsubscript{5} layer as the polishing voltage is increased. We also show that the formation of the oxide corresponds with a reduction in surface etching by analyzing Nb samples using SEM and confocal laser microscopy.
 
+
+\section{Experimental}
+\label{sec:orgb71f960}
+
+A strip of Nb foil was prepared by cleaning with alcohol. A Nb wire was used as a pseudo-electrode, since it is resistant to the EP electrolyte. The counter electrode is an aluminum rod.
+
+The EIS measurements were performed using a BioLogic VSP-300 potentiostat.
+
+
+
+\section{Results}
+\label{sec:org4a45003}
+
+EIS measurements reveal a complex evolution of the surface chemistry as the polishing voltage is increased through the 0.5 V to 1.0 V range. As shown in \ref{fig:nyquistplot}, at 0.5 V the system exhibits a single capacitive process. This is most likely caused by the polarization of the electrical double-layer that occurs between the Nb electrode and the electrolyte. At this low voltage, the Nb\textsubscript{2}O\textsubscript{5} has not been formed due to the low oxidation current and high concentration of HF at the surface of the electrode.
+
+When the voltage is increased, two new features appear, an inductive loop at mid-frequencies and a second capacitive loop at low frequencies. This low frequency loop as caused by the formation of the oxide film and depletion of the HF near the electrode surface. This limits the current through the electrode at higher voltages. 
+
+When the voltage is increased from \qty{0.78}{\volt} to \qty{0.86}{\volt} the polarization resistance changes from positive to negative as shown in \ref{fig:nyquistplot}.
+
+\begin{figure}
+  \label{fig:nyquistplot}
+  \includegraphics[]{figures/nyquist.png}
+  \caption{The complex impedance of Nb. Each plot shows the different regimes of electropolishing at low voltage. A one capacitive loop, B two capacitive loops, C capacitive, inductive, and capacitive loops, D capacitive, inductive, and capacitive loop with a negative resistance.}
+\end{figure}
+
+
+
 \section{Theory}
 \label{sec:org7d749e2}
 An alternating voltage is applied to the niobium electrode of the form:
@@ -134,12 +161,6 @@ The optimum values of \(\lambda\)\textsubscript{k} are not trivial to find. High
 
 
 
-
-
-\section{Calculations}
-\label{sec:org176ad82}
-
-
 \subsection{Test Function}
 \label{sec:org8198a5a}
 
@@ -152,12 +173,6 @@ To discretize the DRT function, we use a set of Gaussian test functions evenly s
 The number of test functions used in the DRT fit was set to 12 functions per decade. The minimum and maximum \omega_n for the test functions was set to a range spanning three magnitudes lower than the minimum measured frequency to the highest measured frequency. 
 
 The width, \(\mu\), of the gaussian function is set such that the full width at half maximum (FWHM) is equal to ln\(\omega\)\textsubscript{n+1}-ln\(\omega\)\textsubscript{n-1}.
-
-
-
-
-\subsection{Electrochemical Origin of the RC Model}
-
 
 
 
@@ -207,36 +222,7 @@ The meaning of negative resistances and capacitances should instead be considere
 
 
 
-\section{Experimental}
-\label{sec:orgb71f960}
 
-
-
-A strip of Nb foil was prepared by cleaning with alcohol. A Nb wire was used as a pseudo-electrode, since it is resistant to the EP electrolyte. The counter electrode is an aluminum rod.
-
-The EIS measurements were performed using a BioLogic VSP-300 potentiostat.
-
-
-
-
-
-
-
-
-
-
-\section{Results}
-\label{sec:org4a45003}
-
-EIS measurements reveal a complex evolution of the surface chemistry as the polishing voltage is increased through the 0.5 V to 1.0 V range. As shown in \ref{fig:nyquistplot}, at 0.5 V the system exhibits a single capacitive process. This is most likely caused by the polarization of the electrical double-layer that occurs between the Nb electrode and the electrolyte. At this low voltage, the Nb\textsubscript{2}O\textsubscript{5} has not been formed due to the low oxidation current and high concentration of HF at the surface of the electrode. Therefore, the polarization resistance is entirely caused by the oxidation of metallic Nb.
-
-When the voltage is increased, two new features appear, an inductive loop at mid-frequencies and a second capacitive loop at low frequencies.
-
-\begin{figure}
-  \label{fig:nyquistplot}
-  \includegraphics[]{figures/nyquist.png}
-  \caption{The complex impedance of Nb. Each plot shows the different regimes of electropolishing at low voltage. A one capacitive loop, B two capacitive loops, C capacitive, inductive, and capacitive loops, D capacitive, inductive, and capacitive loop with a negative resistance.}
-\end{figure}
 
 
 
