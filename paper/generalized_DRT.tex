@@ -92,6 +92,7 @@ Traditional distribution of relaxation time analysis is based on an circuit mode
 \begin{flalign}
   \label{eq:Zrc}
   Z_{RC}\left(\omega\right) &= \frac{R}{1+j\omega R C}\\
+  Z_{voigt}\left(\omega\right) &= R_{s} + \sum_{n=1}^{N} \frac{R_n}{1 + j \frac{\omega}{\omega_n}}\\
   Z_{DRT}\left(\omega\right) &= R_{s} + \int_{0}^{\infty} \frac{G(\omega_0) d \omega_0}{1 + j \frac{\omega}{\omega_0}}
 \end{flalign}
 
@@ -101,14 +102,14 @@ To explain these different behaviors it is more intuitive to abandon the circuit
 
 \begin{flalign}
     \label{eq:gDRT}
-    Z_{F}\left(\omega\right) &= R_{t} + \sum_{i=1}^{N} \frac{k_{i}}{i \omega - s_{i}} \\
+    Z_{F}\left(\omega\right) &= R_{t} + \sum_{n=1}^{N} \frac{k_{n}}{j \omega - s_{n}} \\
     Z_{gDRT}\left(\omega\right) &= R_{t} + \int_{-\infty}^{\infty} \frac{k\left(s\right) ds}{i\omega - s} \\
-    k\left(s\right) &= \nu G\left(\nu\right) \\
-    s &= -\nu \\
-    Z_{gDRT}\left(\omega\right) &= R_{t} + \int_{-\infty}^{\infty} \frac{G\left(\nu\right) d\nu}{1 + i\frac{\omega}{\nu}}
+    k\left(s\right) &= \omega_0 G\left(\omega_0\right) \\
+    s &= -\omega_0 \\
+    Z_{gDRT}\left(\omega\right) &= R_{t} + \int_{-\infty}^{\infty} \frac{G\left(\omega_0\right) d\omega_0}{1 + i\frac{\omega}{\omega_0}}
 \end{flalign}
 
-If we let $s_{i} = \frac{-1}{R_i C_i}$ and $k_{i} = \frac{1}{C_i}$ we see that this equation describes a voigt element. However, the dynamical systems approach does not assume that the impedance is limited to any capacitor, inductor, or resistor. The constants $s_{i}$ and $k_{i}$ can take on both positive and negative values. If we perform the same procedure used to derive the DRT function for infinitesimal voigt elements, we arrive at the same expression with the only difference being the limits of integration span the entire real axis instead of just the positive real axis. The function $G\left(w_0\right)$ is also free to take both positive and negative values.
+If we let $s_{i} = \frac{-1}{R_i C_i}$ and $k_{i} = \frac{1}{C_i}$ we see that this equation describes a voigt element. However, the dynamical systems approach does not assume that the impedance is limited to any capacitor, inductor, or resistor. The constants $s_{i}$ and $k_{i}$ can take on both positive and negative values without violating. If we perform the same procedure used to derive the DRT function for infinitesimal voigt elements, we arrive at the same expression with the only difference being the limits of integration span the entire real axis instead of just the positive real axis. The function $G\left(omega_0\right)$ is also free to take both positive and negative values.
 
 The mathematical derivation of the generalized DRT model is available in the supplemental section of this paper along with details on the numerical fitting method used to solve for the distribution of relaxation times.
 
@@ -130,7 +131,7 @@ Using the generalized DRT method, we are able to fit the Nb impedance spectrum a
   \caption{The Distribution of relaxation times calculated from the EIS impedance data for each of the measured potentials. The current-voltage curve is shown in the graph on the left.}
 \end{figure}
 
-From figure \ref{fig:gamma} we can see that there are three promeinent peaks in the distribution of relaxations times. The peak centered around \qtyrange{100}{1000}{\hertz} corresponds to the electric double layer capacitance. The two other peaks centered around \qty{10}{\hertz} most likely correspond to the oxide layer. This low frequency peak gets more pronounced at higher voltages which indicates greater electrical impedance due to the oxide film. Around \qty{0.75}{\volt} the third peak appears in the negative \qty{10}{\hertz} region. This peak indicates that the oxide film is blocking the current flow leading to a negative current-voltage relationship.
+From figure \ref{fig:gamma} we can see that there are three prominent peaks in the distribution of relaxations times. The peak centered around \qtyrange{100}{1000}{\hertz} corresponds to the electric double layer capacitance. The two other peaks centered around \qty{10}{\hertz} most likely correspond to the oxide layer. This low frequency peak gets more pronounced at higher voltages which indicates greater electrical impedance due to the oxide film. Around \qty{0.75}{\volt} the third peak appears in the negative \qty{10}{\hertz} region. This peak indicates that the oxide film is blocking the current flow leading to a negative current-voltage relationship.
 
 
 
