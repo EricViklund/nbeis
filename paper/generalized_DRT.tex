@@ -19,7 +19,7 @@
 \date{\today}
 
 \begin{abstract}
-  Using electrochemical impedance spectroscopy, we have devised a method of sensing the microscopic surface conditions on the surface of niobium as it is undergoing an electrochemical polishing (EP) treatment. The method uses electrochemical impedance spectroscopy (EIS) to gather information on the surface state of the electrode without disrupting the polishing reaction. The EIS data is analyzed using a so-called distribution of relaxation times (DRT) method. Using DRT, the EIS data can be deconvolved into discrete relaxation time peaks without any apriori knowledge of the electrode dynamics. By analyzing the relaxation time peaks, we are able to distinguish two distinct modes of the EP reaction. As the polishing voltage is increased, the electrode transitions from the low voltage EP mode, characterized by two relaxation time peaks, to the high voltage EP mode, characterized by three relaxation time peaks. By analyzing EPed samples, we show that samples polished in the low voltage mode have significantly higher surface roughness due to grain etching and faceting. Samples polished in the high voltage mode obtain a smooth surface finish. This shows that EIS combined with DRT analysis can be use to predict etching on EPed Nb. This method can also be performed before or during the EP, which could allow for adjustment of polishing parameters to guarantee a smooth cavity surface finish.
+  Using electrochemical impedance spectroscopy, we have devised a method of sensing the microscopic surface conditions on the surface of niobium as it is undergoing an electrochemical polishing (EP) treatment. The method uses electrochemical impedance spectroscopy (EIS) to gather information on the surface state of the electrode without disrupting the polishing reaction. The EIS data is analyzed using a so-called distribution of relaxation times (DRT) method. Using DRT, the EIS data can be deconvolved into discrete relaxation time peaks without any apriori knowledge of the electrode dynamics. By analyzing the relaxation time peaks, we are able to distinguish two distinct modes of the EP reaction. As the polishing voltage is increased, the electrode transitions from the low voltage EP mode, characterized by a single relaxation time peaks, to the high voltage EP mode, characterized by two relaxation time peaks. We theorize that this second peak is caused by the formation of an oxide layer on the electrode. We also find that this oxide induced peak transitions from to a negative relaxation time, which is indicative of a blocking electrode process. By analyzing EPed samples, we show that samples polished in the low voltage mode have significantly higher surface roughness due to grain etching and faceting. We find that the surface roughness of the samples only improves when the oxide film peak is present and in the negative relaxation time region. This shows that EIS combined with DRT analysis can be used to predict etching on EPed Nb. This method can also be performed before or during the EP, which could allow for adjustment of polishing parameters to guarantee a smooth cavity surface finish.
 \end{abstract}
 
 \maketitle
@@ -30,11 +30,11 @@
 \label{sec:org5ef967f}
 Electropolishing (EP) is commonly used to polish Nb SRF cavities to nanometer scale surface roughness. 
 
-EIS has been used to study the chemistry of niobium in HF electrolytes before. However, these studies have only analyzed the spectrum using qualitative methods or traditional equivalent circuit fitting techniques. These methods have proven insufficient for explaining several important phenomenon of EP such as surface etching and spontaneous current oscillations.\cite{cattarin2002nb,Tian_2008,ranjith2018anodic}
+EIS has been used to study the chemistry of niobium in HF electrolytes before.\cite{cattarin2002nb,Tian_2008, tian2008novel, ranjith2018anodic} However, these studies have only analyzed the spectrum using qualitative methods or traditional equivalent circuit fitting techniques. These methods have proven insufficient for explaining several important phenomenon of EP such as surface etching and spontaneous current oscillations.
 
-In this study, we use a model-free method of analyzing the EIS spectrum called distribution of relaxation times (DRT) analysis. The advantage of this method is that the EIS spectrum can be easily characterized over a large range of polishing conditions without making any assumptions about the underlying chemical processes. 
+In this study, we use a model-free method of analyzing the EIS spectrum called distribution of relaxation times (DRT) analysis. The advantage of this method is that the EIS spectrum can be easily characterized over a large range of polishing conditions without making any assumptions about the underlying chemical processes.\cite{10.1063/1.1745355, wan2015influence, ZHANG2015464} This method has been used to characterize a wide range of electrochemical systems such as fuel cells,\cite{Sonn_2008, schichlein2002deconvolution, Leonide_2008} batteries,\cite{SCHMIDT201370, batteries5020043, SONI202297} and supercapacitors.\cite{HELSETH2019100912}
 
-Using this method, we are able to observe the formation of the Nb\textsubscript{2}O\textsubscript{5} layer as the polishing voltage is increased. We also show that the formation of the oxide corresponds with a reduction in surface etching by analyzing Nb samples using SEM and confocal laser microscopy.
+Using this method, we are able to observe the formation of the Nb\textsubscript{2}O\textsubscript{5} layer as the polishing voltage is increased. We also show that the formation of the oxide corresponds with a reduction in surface etching by analyzing Nb samples using confocal laser microscopy.
 
 
 \section{Experimental}
@@ -61,8 +61,6 @@ When the voltage is increased from \qty{0.78}{\volt} to \qty{0.86}{\volt} the lo
 
 The capacitive loop with increasing real impedance is indicative of a surface blocking process. This type of process is typically seen in electroplating processes containing a blocking species. This phenomenon is associated with brightening of the surface, since the blocking species preferentially blocks deposition on surface peaks.
 
-For Nb electropolishing the blocking species is most likely niobium oxide, which limits the electrode reaction rate when the surface HF layer is depleted. The appearance of this low frequency impedance loop coincides with a significant change in the surface morphology of the electropolished Nb. The surface changes from an etched and facetted surface to a smooth surface at around the same voltage as the low frequency loop appears. This is caused by the formation of the oxide film and depletion of the HF at the surface which makes the material removal rate more constant across the surface and eliminates any differences in surface energy caused by grain orientation.
-
 
 \begin{figure}[t]
     \label{fig:surface_maps}
@@ -70,9 +68,11 @@ For Nb electropolishing the blocking species is most likely niobium oxide, which
     \caption{The surface height maps of Nb samples electropolished at different voltages and temperatures.}
 \end{figure}
 
+\section{Oxide Film Formation During Niobium Electropolishing}
 
+The dissolution of niobium is caused by its reaction with HF and its ions in the electrolyte. However, before the niobium can be dissolved it must be oxidized. When the rate of oxidation exceeds the maximum rate of dissolution by HF, limited by diffusion of HF to the electrode surface, niobium oxides can form on the surface. The idea of a compact oxide film present during electropolishing is not a new one.\cite{Tian_2008,tian2008novel} Theories such as the point defect model have been used to explain the behavior of niobium and other pasivating metals\cite{bojinov1997ability, girginov2008conduction, bojinov2003evidence, macdonald1990theory, macdonald1992steady} Ranjith, et. al. propose a reaction model for niobium involving two intermediate adsorbed oxides, Nb\textsuperscript{2+} and Nb\textsuperscript{5+} and using this model qualitatively predict the impedance behavior in both the active and passive regions including the negative differential resistance which we have reported in our own measurments. The model, however, still deviates from the measured EIS spectrum by a significant amount.\cite{ranjith2018anodic}
 
-
+When oxides begin to form on the surface, they do not cover the entire surface instantaneously. Due to slight differences in the oxidation reaction activation energy across the surface, caused by differing grain orientations, surface defects, and the local curvature, the oxide forms preferentially in certain areas. The surface has a mixed oxide with a certain fraction covered by Nb\textsubscript{2}O\textsubscript{5}, NbO, and Nb. As the surface potential is increased a larger portion of the electrode is covered by Nb\textsubscript{2}O\textsubscript{5}. Once the entire surface is covered, the dissolution rate of the surface becomes homogeneous and polishing can occur. This effect can be seen in \ref{fig:surface_maps} when the surface morphology changes from etching to polishing.
 
 
 \section{Generalized Distribution of Relaxation Times}
@@ -91,7 +91,7 @@ Traditional distribution of relaxation time analysis is based on a circuit model
 
 This model is sufficient to describe any capacitive-like processes with positive real impedance and negative imaginary impedance. However, this does not encompass all possible behaviors of electrochemical systems. The impedance of electrochemical systems can exist in all four quadrants of the complex impedance plane. For example, as seen in figure \ref{fig:nyquistplot}, for Nb electropolishing the low frequency impedance loop curls to the left at \qty{0.86}{\volt}. We also observe an inductive mid-frequency loop as seen in figure \ref{fig:nyquistplot} when the voltage is \qty{0.78}{\volt} and \qty{0.86}{\volt}. These features cannot be explained using the traditional distribution of relaxation times.
 
-To explain these different behaviors it is more intuitive to abandon the circuit model perspective of the electrode and instead take a dynamical systems perspective. The electrochemical process can be described by a state vector and a system of first order differential equations that describe the evolution of the state vector over time. For a small perturbation near the steady state solution of this system, the impedance can be calculated as a sum of partial fractions.\cite{wu1998investigation, wu1999general}
+To explain these different behaviors it is more intuitive to abandon the circuit model perspective of the electrode and instead consider the electrode reaction as a dynamical system. The electrochemical process can be described by a state vector whose evolution over time is described by a system of first order differential equations. Wu, et. al show that for a small perturbation, the impedance spectrum of such a system can always be represented as a sum of voigt-like elements given that both positive and negative capacitance and resistance are allowed.\cite{wu1998investigation, wu1999general}
 
 \begin{flalign}
     \label{eq:gDRT}
@@ -102,11 +102,11 @@ To explain these different behaviors it is more intuitive to abandon the circuit
     Z_{gDRT}\left(\omega\right) &= R_{t} + \int_{-\infty}^{\infty} \frac{G\left(\omega_0\right) d\omega_0}{1 + j\frac{\omega}{\omega_0}}
 \end{flalign}
 
-If we let $s_{i} = \frac{-1}{R_i C_i}$ and $k_{i} = \frac{1}{C_i}$ we see that this equation describes a voigt element. However, the dynamical systems approach does not assume that the impedance is limited to any capacitor, inductor, or resistor. The constants $s_{i}$ and $k_{i}$ can take on both positive and negative values. Using the procedure described in section~\ref{sec:sup} we arrive at the same expression for the impedance as the traditional DRT approach with the only difference being the distribution spans both positive and negative frequencies instead of just the positive frequencies. The function $G\left(omega_0\right)$ is also free to take both positive and negative values.
+If we let $s_{i} = \frac{-1}{R_i C_i}$ and $k_{i} = \frac{1}{C_i}$ we see that this equation describes a classical voigt element. However, in this equation the constants $s_{i}$ and $k_{i}$ can take on both positive and negative values. We can take an infinite number of these voigt-like elements and add them together with the caviat that their sum converges to a finite impedance in the same way as the derivation of the classical DRT function, the only difference being the distribution spans both positive and negative frequencies and the function $G\left(omega_0\right)$ is free to take both positive and negative values. By generalizing the DRT method in this manner, it can in principle fit any linear time-invariant electrochemical system.
 
 
 
-\section{Distribution of Relaxation Times for Niobium Electropolishing}
+\section{Distribution of Relaxation Times of Niobium During Electropolishing}
 
 
 
@@ -122,7 +122,9 @@ If we let $s_{i} = \frac{-1}{R_i C_i}$ and $k_{i} = \frac{1}{C_i}$ we see that t
   \caption{The Distribution of relaxation times calculated from the EIS impedance data for each of the measured potentials. The current-voltage curve is shown in the graph on the left.}
 \end{figure}
 
-Using the generalized DRT method, we are able to fit the Nb impedance spectrum across all frequencies including the inductive mid-frequency loop and the low frequency loop as seen in figure \ref{fig:bodeplot}. From figure \ref{fig:gamma} we can see that there are three prominent peaks in the distribution of relaxations times. The peak centered around \qtyrange{100}{1000}{\hertz} corresponds to the electric double layer capacitance. The two other peaks centered around \qty{10}{\hertz} most likely correspond to the oxide layer. This low frequency peak gets more pronounced at higher voltages which indicates greater electrical impedance due to the oxide film. Around \qty{0.75}{\volt} the third peak appears in the negative \qty{10}{\hertz} region. This peak indicates that the oxide film is blocking the current flow leading to a negative current-voltage relationship.
+Using the generalized DRT method, we are able to fit the Nb impedance spectrum across all frequencies including the inductive mid-frequency loop and the low frequency loop as seen in figure \ref{fig:bodeplot}. From figure \ref{fig:gamma} we can see that there are three prominent peaks in the distribution of relaxations times. The peak centered around \qtyrange{100}{1000}{\hertz} corresponds to the electric double layer capacitance. The center of this peak shifts to the right linearly with the polishing voltage. This shows that the relaxation time of the electric double layer follows an Arrhenius type relation.
+
+The two other peaks centered around \qty{10}{\hertz} most likely correspond to the oxide layer. This low frequency peak gets more pronounced at higher voltages which indicates greater electrical impedance due to the oxide film. Around \qty{0.75}{\volt} the third peak appears in the negative \qty{10}{\hertz} region. This peak indicates that the oxide film is blocking the current flow leading to a negative current-voltage relationship.
 
 
 
@@ -144,9 +146,11 @@ In this study we have shown that the etching phenomenon seen in electropolished 
 \section{Supplemental Information}
 \label{sec:sup}
 
-\subsection{Calculating the Log Integral of the DRT Function}
+This Supplemental section will cover the mathematical process of calculating the generalized DRT from experimental measurements of the impedance spectrum. To find the DRT function numerically, we must first discretize the function using a finite set of basis functions which will approximate the continuous DRT function. This is done by first transforming the problem into the much more natural log space. For a chosen basis function, the integral can then be calculated numerically and the problem is then transformed into a simple case of linear regression. We must also apply a normalization procedure to our regression to prevent overfitting.
 
-It is customary to write the DRT function as a function of the log of the frequency, since EIS measurements are typically performed over many orders of magnitude of frequency. It is therefore also neccessary to perform the calculations for the DRT model using the log of the frequency. Otherwise, the computational accuracy will be too low at the low frequencies, or too high at the high frequencies. However, this procedure does not work for our generalized DRT model, since the integral spans both positive and negative values. To solve this problem we must separate the integral in equation~\ref{eq:gDRT} into the sum of two integrals each integrating over one side of the real axis. After a change of variables and reversing the direction of integration we can substitute $G\left(\omega_0\right)$ with a piecewise fit function $\gamma_{\pm}\left(\ln\omega_0\right)$.
+\subsection{Discretizing the Integral of the Generalized DRT Function in Log Coordinates}
+
+It is necessary to discretize the DRT function in the log based coordinate system since EIS measurements are typically performed over many orders of magnitude in frequency. Otherwise, the computational accuracy will be too low at the low frequencies, or too high at the high frequencies. However, this procedure is more challenging for the generalized DRT model, since the integral spans both positive and negative values. To solve this problem we must separate the integral in equation~\ref{eq:gDRT} into the sum of two integrals each integrating over one side of the real axis. After a change of variables and reversing the direction of integration we can substitute $G\left(\omega_0\right)$ with a piece wise fit function $\gamma_{\pm}\left(\ln\omega_0\right)$.
 
 
 
@@ -204,7 +208,7 @@ The matrix $\mathbf{M}$ is calculated by integrating the square of the derivativ
   \mathbf{M} =& \sum_{k=0}^{K}\lambda_{k}\mathbf{M}_{k}
 \end{flalign}
 
-The optimum values of \(\lambda_k\) are difficult to find mathematically, so values were manually adjusted up to $k=2$ to maximize the fitting strength without sacrificing the accuracy of the fit. Mathematical heuristics such as the L-curve, cross-validation, or Bayesian methods\cite{ciucci2015analysis}.
+The optimum values of \(\lambda_k\) are difficult to find mathematically, so values were manually adjusted up to $k=2$ to maximize the fitting strength without sacrificing the accuracy of the fit. Mathematical heuristics such as the L-curve, cross-validation, Fourier transform\cite{BOUKAMP201712} or Bayesian methods\cite{ciucci2015analysis}.
 
 
 
