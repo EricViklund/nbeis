@@ -83,8 +83,7 @@ The distribution of relaxation times is a flexible and general method that can b
 Traditional distribution of relaxation time analysis is based on a circuit model perspective on the electrochemical system. This perspective assumes the electrode is described by a series of voigt circuits, a resistor and a capacitor connected in parallel. By adding an infinite number of infinitesimal voigt elements, any arbitrary capacitive impedance can be described. The distribution of voigt elements is described by the distribution of relaxation times function.
 
 \begin{flalign}
-  \label{eq:Zrc}
-  Z_{RC}\left(\omega\right) &= \frac{R}{1+j\omega R C}\\
+  Z_{RC}\left(\omega\right) &= \frac{R}{1+j\omega R C}\label{eq:Zrc}\\
   Z_{voigt}\left(\omega\right) &= R_{s} + \sum_{n=1}^{N} \frac{R_n}{1 + j \frac{\omega}{\omega_n}}\\
   Z_{DRT}\left(\omega\right) &= R_{s} + \int_{0}^{\infty} \frac{G(\omega_0) d \omega_0}{1 + j \frac{\omega}{\omega_0}}
 \end{flalign}
@@ -94,15 +93,14 @@ This model is sufficient to describe any capacitive-like processes with positive
 To explain these different behaviors it is more intuitive to abandon the circuit model perspective of the electrode and instead consider the electrode reaction as a dynamical system. The electrochemical process can be described by a state vector whose evolution over time is described by a system of first order differential equations. Wu, et. al show that for a small perturbation, the impedance spectrum of such a system can always be represented as a sum of voigt-like elements given that both positive and negative capacitance and resistance are allowed.\cite{wu1998investigation, wu1999general}
 
 \begin{flalign}
-    \label{eq:gDRT}
     Z_{F}\left(\omega\right) &= R_{t} + \sum_{n=1}^{N} \frac{k_{n}}{j \omega - s_{n}} \\
-    Z_{gDRT}\left(\omega\right) &= R_{t} + \int_{-\infty}^{\infty} \frac{k\left(s\right) ds}{j\omega - s} \\
+    Z_{gDRT}\left(\omega\right) &= R_{t} + \int_{-\infty}^{\infty} \frac{k\left(s\right) ds}{j\omega - s}\label{eq:gDRT} \\
     k\left(s\right) &= \omega_0 G\left(\omega_0\right) \\
     s &= -\omega_0 \\
     Z_{gDRT}\left(\omega\right) &= R_{t} + \int_{-\infty}^{\infty} \frac{G\left(\omega_0\right) d\omega_0}{1 + j\frac{\omega}{\omega_0}}
 \end{flalign}
 
-If we let $s_{i} = \frac{-1}{R_i C_i}$ and $k_{i} = \frac{1}{C_i}$ we see that this equation describes a classical voigt element. However, in this equation the constants $s_{i}$ and $k_{i}$ can take on both positive and negative values. We can take an infinite number of these voigt-like elements and add them together with the caviat that their sum converges to a finite impedance in the same way as the derivation of the classical DRT function, the only difference being the distribution spans both positive and negative frequencies and the function $G\left(omega_0\right)$ is free to take both positive and negative values. By generalizing the DRT method in this manner, it can in principle fit any linear time-invariant electrochemical system.
+If we let $s_{i} = \frac{-1}{R_i C_i}$ and $k_{i} = \frac{1}{C_i}$ we see that this equation describes a classical voigt element. However, in this equation the constants $s_{i}$ and $k_{i}$ can take on both positive and negative values. We can take an infinite number of these voigt-like elements and add them together with the caviat that their sum converges to a finite impedance in the same way as the derivation of the classical DRT function, the only difference being the distribution spans both positive and negative frequencies and the function $G\left(\omega_0\right)$ is free to take both positive and negative values. By generalizing the DRT method in this manner, it can in principle fit any linear time-invariant electrochemical system.
 
 
 
@@ -181,16 +179,16 @@ Using algebraic manipulation and a change of variables, the integral can be sepa
 
 The impedance at a frequency $\omega = \omega_m$ is a linear function of the values of $x^{re}_n$ and $x^{im}_n$.
 
-\begin{flalign} \label{eq:A}
+\begin{flalign} 
   Z_{gDRT}\left(\omega_m\right) =& R_{t} + \sum_{n=1}^{N} x^{re}_{n} A^{re}_{n,m} + \sum_{n=1}^{N} x^{im}_{n} A^{im}_{n,m}\\
-  A^{re}_{n,m} =& \int_{-\infty}^{\infty} \frac{\phi_{n}(\ln\omega_0)d\ln\omega_0}{1 + \left(\frac{\omega_m}{\omega_0}\right)^2}\\
-  A^{im}_{n,m} =& \int_{-\infty}^{\infty} \frac{\frac{\omega_m}{\omega_0}\phi_{n}(\ln\omega_0)d\ln\omega_0}{1 + \left(\frac{\omega_m}{\omega_0}\right)^2}
+  A^{re}_{n,m} =& \int_{-\infty}^{\infty} \frac{\phi_{n}(\ln\omega_0)d\ln\omega_0}{1 + \left(\frac{\omega_m}{\omega_0}\right)^2}\label{eq:A_re}\\
+  A^{im}_{n,m} =& \int_{-\infty}^{\infty} \frac{\frac{\omega_m}{\omega_0}\phi_{n}(\ln\omega_0)d\ln\omega_0}{1 + \left(\frac{\omega_m}{\omega_0}\right)^2}\label{eq:A_im}
 \end{flalign}
 
 Given a set of M experimentally measured impedance data points, $\mathbf{Z_{exp}} = \left[Z_1, \ldots, Z_M\right]$ at frequencies $\mathbf{\omega} = \left[\omega_1, \ldots, \omega_M\right]$ we can find the values of $x^{re}_n$ and $x^{im}_n$ using linear regression.
 
-\begin{flalign}\label{eq:Zmatrix}
-  \min_{\mathbf{x^{re}},\mathbf{x^{im}}}\lVert\mathbf{Z_{gDRT}}-\mathbf{Z_{exp}}\rVert = \min_{\mathbf{x^{re}},\mathbf{x^{im}}}\left(\lVert \mathbf{x^{re}} \mathbf{A^{re}} - Re\left(\mathbf{Z_{exp}}\right) \rVert + \lVert \mathbf{x^{im}} \mathbf{A^{im}} - Im\left(\mathbf{Z_{exp}}\right) \rVert \right)
+\begin{flalign}
+  \min_{\mathbf{x^{re}},\mathbf{x^{im}}}\lVert\mathbf{Z_{gDRT}}-\mathbf{Z_{exp}}\rVert = \min_{\mathbf{x^{re}},\mathbf{x^{im}}}\left(\lVert \mathbf{x^{re}} \mathbf{A^{re}} - Re\left(\mathbf{Z_{exp}}\right) \rVert + \lVert \mathbf{x^{im}} \mathbf{A^{im}} - Im\left(\mathbf{Z_{exp}}\right) \rVert \right)\label{eq:Zmatrix}
 \end{flalign}
 
 \subsection{Normalization}
@@ -223,7 +221,7 @@ The choice of basis function is quite arbitrary as long as the resulting functio
   \phi_{n}(ln\omega) &= \frac{1}{\sigma\sqrt{2\pi}}e^{-\left(\frac{ln\omega_0-ln\omega_{n}}{\sigma\sqrt{2}}\right)^2}
 \end{flalign}
 
-Plugging this test function into equation~\ref{eq:A} produces two integrals for $A^{re}$ and $A^{im}$.
+Plugging this test function into equation~\ref{eq:A_re} and \ref{eq:A_im} gives the following expressions for the matrices $A_re$ and $A_im$.
 
 \begin{flalign}
   A^{re}_{n,m} =& \frac{1}{\sigma\sqrt{2\pi}} \int_{-\infty}^{\infty} \frac{e^{-\left(\frac{ln\omega_0-ln\omega_{n}}{\sigma\sqrt{2}}\right)^2} d\ln\omega_0}{1 + e^{2\left(\ln\omega_m - \ln\omega_0\right)}}\\
