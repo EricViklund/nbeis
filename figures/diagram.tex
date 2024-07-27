@@ -1,0 +1,27 @@
+
+
+\begin{tikzpicture}[inner sep=0pt,minimum size=12mm,
+                    every label/.style={minimum size=6mm}]
+    \node at (-1.5, 0.0) (Nb)    [circle,draw,label=left:$S_0$]         {$Nb$};
+    \node at ( 1.0, 2.0) (NbO)   [circle,draw,label=above:$S_1$]        {$NbO$}
+        edge [->, bend left = 10]   node [auto, minimum size=1mm]       {$k_{10}$}  (Nb)
+        edge [<-, bend right = 10]  node [auto, swap, minimum size=1mm] {$k_{01}$}  (Nb);
+    \node at ( 1.0,-2.0) (Nb2O5) [circle,draw,label=below:$S_2$]        {$Nb_2O_5$}
+        edge [->, bend left = 10]   node [auto, minimum size=1mm]       {$k_{21}$}  (NbO)
+        edge [<-, bend right = 10]  node [auto, swap, minimum size=1mm] {$k_{12}$}  (NbO);
+    \node at ( 4.0, 0.0) (Nbaq)  [circle,draw,label=right:$S_3$]        {$Nb_{sol}$}
+        edge [<-]  node [auto, swap, minimum size=1mm]                  {$k_{13}$}  (NbO)
+        edge [<-]  node [auto, minimum size=1mm]                        {$k_{23}$}  (Nb2O5);
+
+    \draw [fill=blue!30] ( 3.7  , 3.9) circle (0.25);
+    \draw [fill=blue!30] ( 4.3  , 1.6) circle (0.25);
+    \draw [fill=blue!30] ( 3.4  , -1.4) circle (0.25);
+    \draw [fill=blue!30] ( 4.9  , -2.9) circle (0.25);
+    \draw [fill=blue!30] ( 3.2  , -3.5) circle (0.25);
+
+    \begin{scope}[on background layer]
+        \draw [fill=black!30] (-3  ,-4.5) rectangle ( 0  , 4.5);
+        \draw [fill=blue!30]  ( 0  ,-4.5) rectangle ( 2  , 4.5);
+    \end{scope}
+\end{tikzpicture}
+
