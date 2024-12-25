@@ -1,0 +1,42 @@
+
+
+\begin{circuitikz}[inner sep=0pt,
+                    every label/.style={minimum size=6mm}]
+    \draw[thick] (0.0,5.0) -- (0.0,0.0) -- (10.0,0.0) -- (10.0,5.0);
+    \draw[pattern=north west lines, pattern color=blue] (0,0) rectangle (10.0,4.0);
+        \node[fill=white,inner sep=5pt] at (5.0,2.0) {HF Electrolyte};
+
+    \draw[fill=red] (1.0,1.0) rectangle (2.0,5.5);
+        \node at (1.5,3.0) {Nb};
+        \coordinate (WE) at (1.5,5.5);
+
+    \draw[fill=gray] (9.0,1.0) rectangle (8.0,5.5);
+        \node at (8.5,3.0) {Al};
+        \coordinate (CE) at (8.5,5.5);
+        \node[shape=circle,fill=white,draw] at (7.5,3.1) {$H_2$};
+        \node[shape=circle,fill=white,draw] at (9.4,2.5) {$H_2$};
+        \node[shape=circle,fill=white,draw] at (7.8,2.1) {$H_2$};
+
+    \draw[thick,->] (2.5, 5.5) coordinate(Ref) to node[right,pos=0.5,inner sep=5pt]{Reference Electrode} (2.5, 3.0) 
+        -- ++(-0.25,-0.25); 
+
+    \draw (WE) ++(0,7) node[left,inner sep=5pt,draw]{Signal Generator} to[short] ++(1,0)
+        node[op amp, noinv input up, anchor=+, label={[above,label distance=10mm] Control Amplifier}](Control Amp){}
+        (Control Amp.-) -- ++(0,-2.5) coordinate(Vout)
+        to[short, *-] ++(-1,0)
+        node[left,inner sep=5pt,draw]{Voltage}
+        (Control Amp.out) to (Control Amp.out -| CE) -- (CE)
+        ;
+
+        \draw (Vout) to ++(0,0) 
+        node[plain amp, xscale=-1, anchor=out, label={[above,label distance=10mm] Electrometer}](Electrometer){}
+        (Electrometer.in up) to ++(1,0) -- ++(0,-3) coordinate(Refup) -- (Refup -| Ref) -- (Ref)
+        (Electrometer.in down) to ++(0,-1) coordinate(WEup) -- (WEup -| WE) to[short,*-] (WE)
+        ;
+
+        \draw (WEup -| WE) to ++(-2,0) to[ammeter] ++(0,-1.5) node[ground]{}
+        ;
+        
+    
+\end{circuitikz}
+

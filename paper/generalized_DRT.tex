@@ -1,14 +1,68 @@
 % Created 2023-06-05 Mon 18:33
 % Intended LaTeX compiler: pdflatex
 
-\documentclass{revtex4-2}
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[letterpaper,margin=1in,headsep = 5mm]{geometry}
 \usepackage{siunitx}
 \usepackage{graphicx}
 \usepackage{amsmath}
-\usepackage{tikz}
-\usetikzlibrary{shapes,arrows,calc,positioning,backgrounds,fit}
+\usepackage{circuitikz}
+\usepackage{setspace}
+\usepackage{mathrsfs}
+\usepackage[sorting=none]{biblatex}
+\usepackage[withpage]{acronym}
+\usepackage{authblk}
+\usepackage[automake,nonumberlist]{glossaries}
+\makeglossaries
 
 
+
+\usetikzlibrary{shapes,arrows,calc,positioning,backgrounds,fit,patterns}
+
+% \graphicspath{{chapters/mechpol/src}{chapters/recoating/paper}{chapters/overview/figures}{chapters/3DFIB/figs}{chapters/nbeis/figures}}
+\addbibresource{generalized_DRT.bib}
+
+
+\newacronym{ep}{EP}{Electropolishing}
+\newacronym{srf}{SRF}{Superconducting Radiofrequency}
+\newacronym{hf}{HF}{Hydrofluoric}
+\newacronym{eis}{EIS}{Electrochemical Impedance Spectroscopy}
+\newacronym{drt}{DRT}{Distribution of Relaxation Times}
+\newacronym{nb}{Nb}{Niobium}
+\newacronym{gdrt}{gDRT}{Generalized Distribution of Relaxation Times}
+\newacronym{v}{V}{Volt}
+\newacronym{hz}{Hz}{Hertz}
+\newacronym{RC}{RC}{Resistor-Capacitor}
+\newacronym{RLC}{RLC}{Resistor-Inductor-Capacitor}
+\newacronym{RMS}{RMS}{Root Mean Square}
+
+\newglossaryentry{j}{name={$j$}, description={The Imaginary Unit $\sqrt{-1}$}}
+\newglossaryentry{Z}{name={$Z$}, description={Complex Electrical Impedance}}
+\newglossaryentry{s}{name={$s$}, description={Complex Frequency}}
+\newglossaryentry{R}{name={$R$}, description={Resistance}}
+\newglossaryentry{C}{name={$C$}, description={Capacitance}}
+\newglossaryentry{L}{name={$L$}, description={Inductance}}
+\newglossaryentry{Omega}{name={$ \Omega $}, description={Frequency Scaled Resistance}}
+\newglossaryentry{lambda}{name={$ \lambda $}, description={Eigenvalue/Eigenfrequency of a Linear Dynamical System}}
+\newglossaryentry{alpha}{name={$ \alpha $}, description={Real Part of a Complex Eigenvalue}}
+\newglossaryentry{beta}{name={$ \beta $}, description={Imaginary Part of a Complex Eigenvalue}}
+\newglossaryentry{G}{name={$G$}, description={The DRT}}
+\newglossaryentry{gamma}{name={$ \gamma $}, description={The DRT in the Log Coordinate System}}
+\newglossaryentry{phi}{name={$ \phi $}, description={A Test Function}}
+\newglossaryentry{omega}{name={$ \omega $}, description={Angular Frequency}}
+\newglossaryentry{delta}{name={$ \delta $}, description={The Dirac Delta Function}}
+\newglossaryentry{S}{name={$S$}, description={A Chemical State}}
+\newglossaryentry{k}{name={$k$}, description={A Reaction Rate Constant}}
+\newglossaryentry{P}{name={$\vec{P}$}, description={A State Vector}}
+\newglossaryentry{I}{name={$I$}, description={Electrode Current}}
+\newglossaryentry{E}{name={$E$}, description={Electrode Potential}}
+\newglossaryentry{Lambda}{name={$\mathbf{\Lambda}$}, description={A Diagonal Matrix}}
+\newglossaryentry{J}{name={$\mathbf{J}$}, description={A Jordan Matrix}}
+\newglossaryentry{N}{name={$\mathbf{N}$}, description={Upper Shift Matrix}}
+
+
+\glsaddall
 
 
 
@@ -17,33 +71,32 @@
 
 
 \title{Analysis of Niobium Electropolishing Using a Generalized Distribution of Relaxation Times Method}
-\author{Eric Viklund}%
-\email{ericviklund2023@u.northwestern.edu}
-\affiliation{Department of Materials Science and Engineering, Northwestern University}%
-\affiliation{Fermi National Accelerator Laboratory}%
-\author{Vijay Chouhan}%
-\affiliation{Fermi National Accelerator Laboratory}%
-\author{Tim Ring}%
-\affiliation{Fermi National Accelerator Laboratory}%
-\author{Davida Smith}%
-\affiliation{Fermi National Accelerator Laboratory}%
-\author{David N. Seidman}%
-\affiliation{Department of Materials Science and Engineering, Northwestern University}%
-\author{Sam Posen}%
-\affiliation{Fermi National Accelerator Laboratory}%
-\date{\today}
+\author[1,2]{Eric Viklund}%
+\author[2]{Vijay Chouhan}
+\author[2]{Davida Smith}
+\author[2]{Tim Ring}
+\author[1]{David N. Seidman}
+\author[2]{Sam Posen}
+\affil[1]{Department of Materials Science and Engineering, Northwestern University}
+\affil[2]{Fermi National Accelerator Laboratory}
 
+\date{\today}
+\maketitle
 \begin{abstract}
-  Using electrochemical impedance spectroscopy, we have devised a method of sensing the microscopic surface conditions on the surface of niobium as it is undergoing an electrochemical polishing (EP) treatment. The method uses electrochemical impedance spectroscopy (EIS) to gather information on the surface state of the electrode without disrupting the polishing reaction. The EIS data is analyzed using a so-called distribution of relaxation times (DRT) method. Using DRT, the EIS data can be deconvolved into discrete relaxation time peaks without any apriori knowledge of the electrode dynamics. By analyzing the relaxation time peaks, we are able to distinguish two distinct modes of the EP reaction. As the polishing voltage is increased, the electrode transitions from the low voltage EP mode, characterized by a single relaxation time peaks, to the high voltage EP mode, characterized by two relaxation time peaks. We theorize that this second peak is caused by the formation of an oxide layer on the electrode. We also find that this oxide induced peak transitions from to a negative relaxation time, which is indicative of a blocking electrode process. By analyzing EPed samples, we show that samples polished in the low voltage mode have significantly higher surface roughness due to grain etching and faceting. We find that the surface roughness of the samples only improves when the oxide film peak is present and in the negative relaxation time region. This shows that EIS combined with DRT analysis can be used to predict etching on EPed Nb. This method can also be performed before or during the EP, which could allow for adjustment of polishing parameters to guarantee a smooth cavity surface finish.
+  Using electrochemical impedance spectroscopy, we have devised a method of sensing the microscopic surface conditions on the surface of niobium as it is undergoing an electrochemical polishing (EP) treatment. The method uses electrochemical impedance spectroscopy (EIS) to gather information on the surface state of the electrode without disrupting the polishing reaction. The EIS data is analyzed using a so-called distribution of relaxation times (DRT) method. Using DRT, the EIS data can be deconvolved into discrete relaxation time peaks without any a priori knowledge of the electrode dynamics. By analyzing the relaxation time peaks, we are able to distinguish two distinct modes of the EP reaction. As the polishing voltage is increased, the electrode transitions from the low voltage EP mode, characterized by a single relaxation time peaks, to the high voltage EP mode, characterized by two relaxation time peaks. We theorize that this second peak is caused by the formation of an oxide layer on the electrode. We also find that this oxide induced peak transitions from to a negative relaxation time, which is indicative of a blocking electrode process. By analyzing EPed samples, we show that samples polished in the low voltage mode have significantly higher surface roughness due to grain etching and faceting. We find that the surface roughness of the samples only improves when the oxide film peak is present and in the negative relaxation time region. This shows that EIS combined with DRT analysis can be used to predict etching on EPed Nb. This method can also be performed before or during the EP, which could allow for adjustment of polishing parameters to guarantee a smooth cavity surface finish.
 \end{abstract}
 
-\maketitle
+\newpage
+
+\printglossary[title={List of Terms}]
+
+\newpage
 
 
 \input{content.tex}
 
 
-\bibliography{generalized_DRT}
+\printbibliography
 
 
 \end{document}
